@@ -10,12 +10,16 @@
 # include <QTextEdit>
 # include <QtNetwork>
 # include <QtCore>
+# include <iostream>
 
 class Console : public QWidget
 {
+Q_OBJECT
 public:
 	Console();
 	void 	initConsole();
+public slots:
+	void 	readTcpData();
 private:
 	QTcpSocket  	*_pSocket;
 	QTextEdit	    *_consoleText;
