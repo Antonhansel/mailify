@@ -1,0 +1,24 @@
+#include "Console.hpp"
+
+Console::Console()
+{
+  _window = new QWidget;
+  if (DEBUG)
+ 	_window->show();
+  _consoleText = new QTextEdit(this);
+  _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
+  _consoleText->setReadOnly(true);
+  _mainLayout = new QGridLayout;
+  _mainLayout->addWidget(_consoleText, 0, 0);
+  _window->setLayout(_mainLayout);
+  initConsole();
+}
+
+void Console::initConsole()
+{
+  _pSocket = new QTcpSocket(this);
+  connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
+  _pSocket->connectToHost(IP, PORT);
+  if (_pSocket->waitForConnected())
+    _consoleText->append("Connexion established. Handshaking with server...");
+}
