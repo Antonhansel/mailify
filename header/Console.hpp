@@ -11,6 +11,7 @@
 # include <QtNetwork>
 # include <QtCore>
 # include <iostream>
+# include <QLineEdit>
 
 class Console : public QWidget
 {
@@ -18,13 +19,16 @@ Q_OBJECT
 public:
 	Console();
 	void 	initConsole();
+	void 	inputLayout();
 public slots:
+	void 	getInput();
 	void 	readTcpData();
 private:
 	QTcpSocket  	*_pSocket;
 	QTextEdit	    *_consoleText;
 	QWidget 		*_window;
 	QGridLayout	 	*_mainLayout;
+	QLineEdit		*_lineedit;
 };
 
 #endif /* _CONSOLE_HPP_ */

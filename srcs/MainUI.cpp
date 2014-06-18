@@ -17,7 +17,7 @@ void	MainUI::applyLayouts()
   _mainLayout->addWidget(_folders, 1, 0);
   _mainLayout->addWidget(_mailPreview, 1, 1);
   // _mainLayout->addWidget(_input, 1, 1, Qt::AlignLeft);
-  // _mainLayout->addWidget(_send, 1, 1, Qt::AlignRight);
+  _mainLayout->addWidget(_send, 0, 1, Qt::AlignRight);
 }
 
 void  MainUI::timeLayout()
@@ -40,6 +40,7 @@ void    MainUI::countTime()
 void MainUI::connectSlots()
 {
   QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(countTime(void)));
+  QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMail(void)));
 }
 
 void  MainUI::mailPreviewLayout()
@@ -70,9 +71,15 @@ void	MainUI::initLayouts()
   foldersLayout();
   mailPreviewLayout();
   menuBar();
+  initButtons();
   // inputLayout();
   // displayLayout();
   timeLayout();
+}
+
+void MainUI::sendMail()
+{
+  _sendMail = new SendMail(_console);
 }
 
 void	MainUI::initUi()
@@ -90,6 +97,11 @@ void            MainUI::showAbout() const
   msgBox.setInformativeText("A simple mail client in C++ using Qt Framework, by ribeau_a\n");
   msgBox.setStandardButtons(QMessageBox::Ok);
   msgBox.exec();
+}
+
+void        MainUI::initButtons()
+{
+  _send = new QPushButton("Write a mail");
 }
 
 MainUI::MainUI() : QWidget()

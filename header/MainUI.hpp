@@ -28,6 +28,7 @@
 # include <QTime>
 # include <QTimer>
 # include "Console.hpp"
+# include "SendMail.hpp"
 
 class	MainUI: public	QWidget
 {
@@ -37,6 +38,7 @@ public:
 public slots:
   void  countTime(); 
   void  showAbout() const;
+  void  sendMail();
 private:
   void  connectSlots();
   void  initLayouts();
@@ -46,7 +48,9 @@ private:
   void  timeLayout();
   void  mailPreviewLayout();
   void  menuBar();
+  void  initButtons();
 protected:
+  SendMail     *_sendMail;
   Console      *_console;
   QAction	     *_exitAction;
   QAction	     *_toggleStatus;
