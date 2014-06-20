@@ -13,6 +13,12 @@ void  BestSocketEver::sendData(QString input)
     write(input.toUtf8());
 }
 
+qint64  BestSocketEver::write(const QByteArray &byteArray)
+{
+    _monitor->_consoleText->append(byteArray);
+    return QSslSocket::write(byteArray);
+}
+
 QByteArray BestSocketEver::readAll()
 {
     QByteArray tmp = QSslSocket::readAll();

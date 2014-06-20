@@ -32,6 +32,7 @@ Q_OBJECT
 public:
     BestSocketEver();
     void    sendData(QString input);
+    qint64  write(const QByteArray &byteArray);
     QByteArray      readAll();
 // public slots:
 //     void    _ready();
