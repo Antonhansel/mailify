@@ -28,13 +28,16 @@
 # include "Smtp.hpp"
 # include "GetCredentials.hpp"
 
+class MainUI;
+
 class	Connexion: public	QWidget
 {
   Q_OBJECT
 public:
-  Connexion();
+  Connexion(MainUI *);
   QString   getUsername() const;
   QString   getPassword() const;
+  void  callbackSmtp(std::string);
 public slots:
   void  tryConnect();
 private:
@@ -46,20 +49,26 @@ private:
   void  timeLayout();
   void  initConnexionStuff();
   void 		getIds();
+  void initConnexion(QString username, QString password, QString server);
 protected:
   int       _sendStep;
   QString   _addressString;
   QString   _passString;
+  QString   _serverAddressString;
 	bool 		_displayAll;
- 	QWidget 	 *_window;
-  	QLabel       *_addressLabel;
-  	QLabel       *_passLabel;
+  QWidget    *_window;
+ 	MainUI 	 *_parent;
+    QLabel       *_addressLabel;
+    QLabel       *_passLabel;
+  	QLabel       *_serverAddressLabel;
+    QGridLayout  *_mainLayout;
+    QLineEdit    *_address;
+    QLineEdit    *_pass;
+    QLineEdit    *_serverAddress;
+    QLineEdit    *_passMailify;
+    QLabel     *_passMailifyLabel;
+    QLabel     *_errorLabel;
   	QPushButton  *_connect;
-  	QGridLayout	 *_mainLayout;
-  	QLineEdit    *_address;
-  	QLineEdit    *_pass;
-  	QLineEdit 	 *_passMailify;
-  	QLabel 		 *_passMailifyLabel;
 };
 
-#endif 
+#endif

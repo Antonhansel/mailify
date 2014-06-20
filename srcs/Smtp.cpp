@@ -1,64 +1,77 @@
 #include "Smtp.hpp"
+#include "Connexion.hpp"
 
-Smtp::Smtp(QString username, QString password)
+Smtp::Smtp()
 {
   _connected = false;
-  _username = username;
-  _password = password;
-  _step = -1;
-  _window = new QWidget;
-  if (DEBUG)
- 	_window->show();
-  _window->setFixedSize(1000, 1000);
-  _window->setWindowTitle(tr("Debug Smtp"));
-  _consoleText = new QTextEdit(this);
-  _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
-  _consoleText->setReadOnly(true);
-  _consoleText->setStyleSheet("color: green ; background-color: black");
-  _lineedit = new QLineEdit(this);
-  _mainLayout = new QGridLayout;
-  _mainLayout->addWidget(_consoleText, 0, 0);
-  _mainLayout->addWidget(_lineedit, 1, 0);
-  _window->setLayout(_mainLayout);
-  QObject::connect(_lineedit, SIGNAL(returnPressed()), 
-    this,SLOT(getInput(void)));
-  initSmtp();
+    _window = new QWidget;
+    if (DEBUG)
+        _window->show();
+    _window->setFixedSize(1000, 1000);
+    _window->setWindowTitle(tr("Debug Smtp"));
+    _consoleText = new QTextEdit(this);
+    _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
+    _consoleText->setReadOnly(true);
+    _consoleText->setStyleSheet("color: green ; background-color: black");
+    _lineedit = new QLineEdit(this);
+    _mainLayout = new QGridLayout;
+    _mainLayout->addWidget(_consoleText, 0, 0);
+    _mainLayout->addWidget(_lineedit, 1, 0);
+    _window->setLayout(_mainLayout);
+    QObject::connect(_lineedit, SIGNAL(returnPressed()),
+        this,SLOT(getInput(void)));
+    initSmtp();
+}
+
+void Smtp::initConnexion(QString &username, QString &password, QString &server, Connexion *callback)
+{
+    _username = username;
+    _password = password;
+    _server = server;
+    _callback = callback;
+    _step = -1;
+    initSmtp();
 }
 
 void  Smtp::getInput()
 {
-  QString      input;
+    QString      input;
 
-  input = _lineedit->text();
-  _lineedit->setText("");
-  _consoleText->append(input);
-  input += '\n';
-  QByteArray    data = input.toUtf8();
-  _pSocket->write(data);
+    input = _lineedit->text();
+    _lineedit->setText("");
+    _consoleText->append(input);
+    input += '\n';
+    QByteArray    data = input.toUtf8();
+    _pSocket->write(data);
 }
 
 void  Smtp::sendData(QString input)
 {
-  _consoleText->append(input);
-  input += '\n';
-  QByteArray    data = input.toUtf8();
-  _pSocket->write(data);
+    _consoleText->append(input);
+    input += '\n';
+    QByteArray    data = input.toUtf8();
+    _pSocket->write(data);
 }
 
 void Smtp::initSmtp()
 {
-  _pSocket = new QSslSocket(this);
-  connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
-  _pSocket->connectToHost(IP, PORT);
-  if (_pSocket->waitForConnected())
-    _consoleText->append("Connexion established.");
+    _pSocket = new QSslSocket(this);
+    connect(_pSocket, SIGNAL(encrypted()), this, SLOT(_ready()));
+    connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
+    _pSocket->connectToHost(_server, PORT);
+    if (_pSocket->waitForConnected())
+        _consoleText->append("Connexion established.");
+}
+
+void Smtp::_ready()
+{
+    _callback->callbackSmtp("");
 }
 
 bool Smtp::isConnected() const
 {
   return (_connected);
 }
-
 
 void  Smtp::setFrom(QString from)
 {

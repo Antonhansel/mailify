@@ -1,8 +1,9 @@
 #include "SendMail.hpp"
+#include "MainUI.hpp"
 
-SendMail::SendMail(Connexion *connexion)
+SendMail::SendMail(MainUI *parent)
 {
-  _connexion = connexion;
+  _parent = parent;
   this->_window = new QWidget;
   this->_window->setFixedSize(1000, 1000);
   this->_window->setWindowTitle(tr("Send a new mail"));
@@ -25,7 +26,7 @@ void  SendMail::sendMessage()
 {
   QString input;
 
-  _smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
+  _smtp = _parent->smtp();
   input = "<";
   input += _from->text();
   input += ">";

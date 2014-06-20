@@ -36,8 +36,9 @@ class	MainUI: public	QWidget
   Q_OBJECT
 public:
   MainUI();
+  Smtp *smtp();
 public slots:
-  void  countTime(); 
+  void  countTime();
   void  showAbout() const;
   void  sendMail();
 private:
@@ -51,7 +52,8 @@ private:
   void  menuBar();
   void  initButtons();
 protected:
-  Connexion    *_connexion;
+  Connexion     *_connexion;
+  Smtp          *_smtp;
   SendMail     *_sendMail;
   QAction	     *_exitAction;
   QAction	     *_toggleStatus;
@@ -64,7 +66,7 @@ protected:
   QTextEdit	   *_mailPreview;
   QLabel	     *_input;
   QPushButton	 *_send;
-  QLCDNumber	 *_time;  
+  QLCDNumber	 *_time;
   QTimer	     *_timer;
   QTimer	     *_timerec;
   QLineEdit	   *_lineedit;
