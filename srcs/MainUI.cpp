@@ -56,13 +56,11 @@ void  MainUI::menuBar()
 {
   _menuBar = new QMenuBar;
   _fileMenu = new QMenu(tr("&File"), this);
-  _toggleStatus = _fileMenu->addAction(tr("Change status"));
   _about = _fileMenu->addAction(tr("About"));
   _exitAction = _fileMenu->addAction(tr("E&xit"));
   _menuBar->addMenu(_fileMenu);
 
   connect(_exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-  connect(_toggleStatus, SIGNAL(triggered()), this, SLOT(toggleStatus()));
   connect(_about, SIGNAL(triggered()), this, SLOT(showAbout()));
 }
 
@@ -100,6 +98,12 @@ void            MainUI::showAbout() const
 void        MainUI::initButtons()
 {
   _send = new QPushButton("Write a mail");
+}
+
+void  MainUI::fetchMails()
+{
+  if (!_imap)
+    _imap = new Imap(this);
 }
 
 MainUI::MainUI() : QWidget()

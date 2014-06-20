@@ -7,7 +7,7 @@ Smtp::Smtp()
     _window = new QWidget;
     if (DEBUG)
         _window->show();
-    _window->setFixedSize(1000, 1000);
+    _window->setFixedSize(500, 500);
     _window->setWindowTitle(tr("Debug Smtp"));
     _consoleText = new QTextEdit(this);
     _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
@@ -65,7 +65,7 @@ void Smtp::initSmtp()
 
 void Smtp::_ready()
 {
-
+  
 }
 
 bool Smtp::isConnected() const

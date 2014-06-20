@@ -30,6 +30,7 @@
 # include "Smtp.hpp"
 # include "SendMail.hpp"
 # include "Connexion.hpp"
+# include "Imap.hpp"
 
 class	MainUI: public	QWidget
 {
@@ -41,6 +42,7 @@ public slots:
   void  countTime();
   void  showAbout() const;
   void  sendMail();
+  void  fetchMails();
 private:
   void  connectSlots();
   void  initLayouts();
@@ -52,8 +54,9 @@ private:
   void  menuBar();
   void  initButtons();
 protected:
-  Connexion     *_connexion;
-  Smtp          *_smtp;
+  Imap        *_imap;
+  Connexion   *_connexion;
+  Smtp        *_smtp;
   SendMail     *_sendMail;
   QAction	     *_exitAction;
   QAction	     *_toggleStatus;

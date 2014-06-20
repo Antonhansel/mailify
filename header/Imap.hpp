@@ -1,8 +1,8 @@
-#ifndef _SMTP_HPP_
-#define _SMTP_HPP_
+#ifndef _IMAP_HPP_
+# define _IMAP_HPP_
 
+//port 993 google
 #define DEBUG true
-#define PORT 587
 
 # include <unistd.h>
 # include <QWidget>
@@ -15,29 +15,23 @@
 # include <QLineEdit>
 
 class Connexion;
-class Smtp : public QWidget
+class MainUI;
+class Imap : public QWidget
 {
 Q_OBJECT
 public:
-	Smtp();
-	void 	initSmtp();
+	Imap(MainUI *);
+	void 	initImap();
 	void 	inputLayout();
 	void 	sendData(QString input);
 	bool 	isConnected() const;
-	void 	setFrom(QString);
-	void 	setTo(QString);
-	void 	setData(QString);
-	void 	setSubject(QString);
 	void 	initConnexion(QString &, QString &, QString &, int, Connexion *);
 public slots:
 	void 	_ready();
 	void 	getInput();
 	void 	readTcpData();
 private:
-	QString			_subject;
-	QString			_data;
-	QString			_to;
-	QString			_from;
+	MainUI 			*_parent;
 	int 			_port;
 	bool 			_connected;
 	Connexion 		*_callback;
@@ -52,4 +46,4 @@ private:
 	QLineEdit		*_lineedit;
 };
 
-#endif /* _SMTP_HPP_ */
+#endif /* _IMAP_HPP_ */
