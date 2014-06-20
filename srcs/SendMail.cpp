@@ -1,12 +1,12 @@
 #include "SendMail.hpp"
 
-SendMail::SendMail(Console *console)
+SendMail::SendMail(Connexion *connexion)
 {
+  _connexion = connexion;
   this->_window = new QWidget;
   this->_window->setFixedSize(1000, 1000);
   this->_window->setWindowTitle(tr("Send a new mail"));
   this->_window->show();
-  _console = console;
   this->_mainLayout = new QGridLayout;
   initInputs();
   this->_mainLayout->addWidget(_from, 0, 1);
@@ -16,11 +16,20 @@ SendMail::SendMail(Console *console)
   this->_mainLayout->addWidget(_subjectLabel, 2, 0);
   this->_mainLayout->addWidget(_subject, 2, 1);
   this->_mainLayout->addWidget(_text, 3, 1);
+  this->_mainLayout->addWidget(_send, 4, 0);
   this->_window->setLayout(this->_mainLayout);
+  QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMessage(void)));
+}
+
+void  SendMail::sendMessage()
+{
+  Smtp *smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
 }
 
 void SendMail::initInputs()
 {
+  _send = new QPushButton(this);
+  _send->setText("Send message");
   _from = new QLineEdit(this);
   _fromLabel = new QLabel(this);
   _fromLabel->setText("From: ");

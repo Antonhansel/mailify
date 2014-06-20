@@ -1,17 +1,24 @@
 #ifndef _SENDMAIL_HPP_
 #define _SENDMAIL_HPP_
 
-#include "Console.hpp"
+#include "Smtp.hpp"
 #include <QLabel>
+#include <QPushButton>
+#include <iostream>
+#include "Connexion.hpp"
 
 class SendMail : public QWidget
 {
  Q_OBJECT
+public slots:
+	void 	sendMessage();
 public:
-	SendMail(Console *console);
+	SendMail(Connexion *connexion);
 	~SendMail();
 	void 	initInputs();
 private:
+	Connexion 	*_connexion;
+	QPushButton	*_send;
 	QLabel 		*_fromLabel;
 	QLabel		*_toLabel;
 	QLabel		*_subjectLabel;
@@ -20,7 +27,7 @@ private:
 	QLineEdit 	*_to;
 	QLineEdit 	*_subject;
 	QTextEdit 	*_text;
-	Console 	*_console;
+	Smtp 		*_console;
 	QWidget 	*_window;
 };
 

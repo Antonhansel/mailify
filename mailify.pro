@@ -9,5 +9,6 @@ QT += widgets
 QT += network
 
 # Input
-HEADERS += header/Console.hpp header/MainUI.hpp header/SendMail.hpp 
-SOURCES += srcs/Console.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp
+HEADERS += header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp
+SOURCES += srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp
+

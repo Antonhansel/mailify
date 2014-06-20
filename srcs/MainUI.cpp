@@ -72,14 +72,12 @@ void	MainUI::initLayouts()
   mailPreviewLayout();
   menuBar();
   initButtons();
-  // inputLayout();
-  // displayLayout();
   timeLayout();
 }
 
 void MainUI::sendMail()
 {
-  _sendMail = new SendMail(_console);
+  _sendMail = new SendMail(_connexion);
 }
 
 void	MainUI::initUi()
@@ -111,6 +109,6 @@ MainUI::MainUI() : QWidget()
   applyLayouts();
   connectSlots();
   setLayout(_mainLayout);
-  _console = new Console();
+  _connexion = new Connexion();
 }
 

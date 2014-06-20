@@ -1,10 +1,8 @@
-#ifndef MAIN_UI_HPP_
-# define MAIN_UI__HPP_
-
-#define WIDTH 1200
-#define HEIGHT 1600
+#ifndef _CONNEXION_HPP_
+# define _CONNEXION_HPP_
 
 # include <sstream>
+# include <iostream>
 # include <QtCore>
 # include <QFont>
 # include <QPainter>
@@ -28,18 +26,17 @@
 # include <QTime>
 # include <QTimer>
 # include "Smtp.hpp"
-# include "SendMail.hpp"
-# include "Connexion.hpp"
+# include "GetCredentials.hpp"
 
-class	MainUI: public	QWidget
+class	Connexion: public	QWidget
 {
   Q_OBJECT
 public:
-  MainUI();
+  Connexion();
+  QString   getUsername() const;
+  QString   getPassword() const;
 public slots:
-  void  countTime(); 
-  void  showAbout() const;
-  void  sendMail();
+  void  tryConnect();
 private:
   void  connectSlots();
   void  initLayouts();
@@ -47,27 +44,21 @@ private:
   void  initUi();
   void  applyLayouts();
   void  timeLayout();
-  void  mailPreviewLayout();
-  void  menuBar();
-  void  initButtons();
+  void  initConnexionStuff();
+  void 		getIds();
 protected:
-  Connexion    *_connexion;
-  SendMail     *_sendMail;
-  QAction	     *_exitAction;
-  QAction	     *_toggleStatus;
-  QAction	     *_backgroundColor;
-  QAction	     *_about;
-  QMenuBar	   *_menuBar;
-  QMenu		     *_fileMenu;
-  QGridLayout	 *_mainLayout;
-  QTextEdit	   *_folders;
-  QTextEdit	   *_mailPreview;
-  QLabel	     *_input;
-  QPushButton	 *_send;
-  QLCDNumber	 *_time;  
-  QTimer	     *_timer;
-  QTimer	     *_timerec;
-  QLineEdit	   *_lineedit;
+  QString   _addressString;
+  QString   _passString;
+	bool 		_displayAll;
+ 	QWidget 	 *_window;
+  	QLabel       *_addressLabel;
+  	QLabel       *_passLabel;
+  	QPushButton  *_connect;
+  	QGridLayout	 *_mainLayout;
+  	QLineEdit    *_address;
+  	QLineEdit    *_pass;
+  	QLineEdit 	 *_passMailify;
+  	QLabel 		 *_passMailifyLabel;
 };
 
-#endif /* MAIN_UI_HPP_ */
+#endif 
