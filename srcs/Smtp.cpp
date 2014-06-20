@@ -35,22 +35,15 @@ void Smtp::initConnexion(QString &username, QString &password, QString &server, 
 
 void  Smtp::getInput()
 {
-    QString      input;
-
-    input = _lineedit->text();
     _lineedit->setText("");
-    _consoleText->append(input);
-    input += '\n';
-    QByteArray    data = input.toUtf8();
-    _pSocket->write(data);
+    sendData(_lineedit->text());
 }
 
 void  Smtp::sendData(QString input)
 {
     _consoleText->append(input);
     input += '\n';
-    QByteArray    data = input.toUtf8();
-    _pSocket->write(data);
+    _pSocket->write(input.toUtf8());
 }
 
 void Smtp::initSmtp()
@@ -76,11 +69,12 @@ bool Smtp::isConnected() const
 void  Smtp::setFrom(QString from)
 {
   QString tmp;
-  tmp = "MAIL FROM: ";
-  tmp += _from;
-  sendData(tmp);
 
   _from = from;
+  tmp = "MAIL FROM: ";
+  tmp += _from;
+  printf("From : %s\n", tmp.toUtf8().data());
+  sendData(tmp);
 }
 
 void Smtp::setTo(QString to)
