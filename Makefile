@@ -1859,7 +1859,45 @@ Smtp.o: srcs/Smtp.cpp header/Smtp.hpp \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
-		/usr/include/qt5/QtWidgets/qlineedit.h
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		header/Connexion.hpp \
+		/usr/include/qt5/QtGui/QFont \
+		/usr/include/qt5/QtGui/QPainter \
+		/usr/include/qt5/QtGui/qpainter.h \
+		/usr/include/qt5/QtGui/QDesktopServices \
+		/usr/include/qt5/QtGui/qdesktopservices.h \
+		/usr/include/qt5/QtWidgets/QApplication \
+		/usr/include/qt5/QtWidgets/qapplication.h \
+		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
+		/usr/include/qt5/QtGui/qguiapplication.h \
+		/usr/include/qt5/QtGui/qinputmethod.h \
+		/usr/include/qt5/QtWidgets/QPushButton \
+		/usr/include/qt5/QtWidgets/qpushbutton.h \
+		/usr/include/qt5/QtWidgets/qabstractbutton.h \
+		/usr/include/qt5/QtGui/qicon.h \
+		/usr/include/qt5/QtWidgets/QLCDNumber \
+		/usr/include/qt5/QtWidgets/qlcdnumber.h \
+		/usr/include/qt5/QtWidgets/QColorDialog \
+		/usr/include/qt5/QtWidgets/qcolordialog.h \
+		/usr/include/qt5/QtWidgets/qdialog.h \
+		/usr/include/qt5/QtWidgets/QHBoxLayout \
+		/usr/include/qt5/QtWidgets/QGroupBox \
+		/usr/include/qt5/QtWidgets/qgroupbox.h \
+		/usr/include/qt5/QtWidgets/QDialog \
+		/usr/include/qt5/QtWidgets/QMenuBar \
+		/usr/include/qt5/QtWidgets/qmenubar.h \
+		/usr/include/qt5/QtWidgets/qmenu.h \
+		/usr/include/qt5/QtWidgets/qaction.h \
+		/usr/include/qt5/QtWidgets/qactiongroup.h \
+		/usr/include/qt5/QtWidgets/QMenu \
+		/usr/include/qt5/QtWidgets/QAction \
+		/usr/include/qt5/QtWidgets/QLabel \
+		/usr/include/qt5/QtWidgets/qlabel.h \
+		/usr/include/qt5/QtWidgets/QMessageBox \
+		/usr/include/qt5/QtWidgets/qmessagebox.h \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/QTimer \
+		header/GetCredentials.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Smtp.o srcs/Smtp.cpp
 
 main.o: srcs/main.cpp header/MainUI.hpp \
@@ -2827,7 +2865,8 @@ SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
 		/usr/include/qt5/QtWidgets/qmessagebox.h \
 		/usr/include/qt5/QtCore/QTime \
 		/usr/include/qt5/QtCore/QTimer \
-		header/GetCredentials.hpp
+		header/GetCredentials.hpp \
+		header/MainUI.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SendMail.o srcs/SendMail.cpp
 
 Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
@@ -3148,7 +3187,9 @@ Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
 		/usr/include/qt5/QtNetwork/qsslkey.h \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
-		header/GetCredentials.hpp
+		header/GetCredentials.hpp \
+		header/MainUI.hpp \
+		header/SendMail.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Connexion.o srcs/Connexion.cpp
 
 GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \
