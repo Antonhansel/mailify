@@ -47,6 +47,7 @@ private:
   void  initConnexionStuff();
   void 		getIds();
 protected:
+  int       _sendStep;
   QString   _addressString;
   QString   _passString;
 	bool 		_displayAll;

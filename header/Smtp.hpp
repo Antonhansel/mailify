@@ -23,11 +23,21 @@ public:
 	Smtp(QString, QString);
 	void 	initSmtp();
 	void 	inputLayout();
+	void 	sendData(QString input);
+	bool 	isConnected() const;
+	void 	setFrom(QString);
+	void 	setTo(QString);
+	void 	setData(QString);
+	void 	setSubject(QString);
 public slots:
 	void 	getInput();
 	void 	readTcpData();
-	void 	sendData(QString input);
 private:
+	QString			_subject;
+	QString			_data;
+	QString			_to;
+	QString			_from;
+	bool 			_connected;
 	QString			_username;
 	QString			_password;
 	int 			_step;

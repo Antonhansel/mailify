@@ -16,7 +16,9 @@ public:
 	SendMail(Connexion *connexion);
 	~SendMail();
 	void 	initInputs();
+	void 	flushMail();
 private:
+	Smtp 		*_smtp;
 	Connexion 	*_connexion;
 	QPushButton	*_send;
 	QLabel 		*_fromLabel;

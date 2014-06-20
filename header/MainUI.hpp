@@ -1,8 +1,8 @@
 #ifndef MAIN_UI_HPP_
 # define MAIN_UI__HPP_
 
-#define WIDTH 1200
-#define HEIGHT 1600
+#define WIDTH 600
+#define HEIGHT 800
 
 # include <sstream>
 # include <QtCore>

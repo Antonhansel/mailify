@@ -23,7 +23,21 @@ SendMail::SendMail(Connexion *connexion)
 
 void  SendMail::sendMessage()
 {
-  Smtp *smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
+  QString input;
+
+  _smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
+  input = "<";
+  input += _from->text();
+  input += ">";
+  _smtp->setFrom(input);
+  input = "<";
+  input += _to->text();
+  input += ">";
+  _smtp->setTo(input);
+  input = "Subject: ";
+  input += _subject->text();
+  _smtp->setSubject(input);
+  _smtp->setData(_text->toPlainText());
 }
 
 void SendMail::initInputs()

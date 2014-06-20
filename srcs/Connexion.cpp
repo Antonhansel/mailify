@@ -25,6 +25,7 @@ void  Connexion::tryConnect()
     _addressString = addr64.toBase64();
     _passString = pass64.toBase64();
   }
+  this->_window->hide();
 }
 
 void  Connexion::initConnexionStuff()
