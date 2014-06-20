@@ -29,6 +29,7 @@ public:
 	void 	setData(QString);
 	void 	setSubject(QString);
 	void 	initConnexion(QString &, QString &, QString &, int, Connexion *);
+	QString &username();
 public slots:
 	void 	_ready();
 	void 	getInput();
