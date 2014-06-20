@@ -76,9 +76,9 @@ bool Smtp::isConnected() const
 void  Smtp::setFrom(QString from)
 {
   QString tmp;
-    tmp = "MAIL FROM: ";
-    tmp += _from;
-    sendData(tmp);
+  tmp = "MAIL FROM: ";
+  tmp += _from;
+  sendData(tmp);
 
   _from = from;
 }
@@ -105,7 +105,7 @@ void Smtp::readTcpData()
   _consoleText->append(data);
   if (_connected == true)
   {
-    if (data.startsWith("250") || data.startsWith("354"))
+    if (data.startsWith("250 2.1") || data.startsWith("354"))
     {
         if (_step == 6)
         {
@@ -130,7 +130,7 @@ void Smtp::readTcpData()
           sendData(_subject);
           sendData(_data);
           sendData("\r\n.\r");
-          _step++;
+          _step = 6;
         }
     }
    }
