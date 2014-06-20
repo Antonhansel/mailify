@@ -111,10 +111,19 @@ void Smtp::readTcpData()
         else if (_step == 7)
         {
           sendData("DATA");
-          sleep(1);
+          _step++;
+        }
+        else if (_step == 8)
+        {
+          input = "From: ";
+          input += _to;
+          sendData(input);
+          input = "To: ";
+          input += _to;
+          sendData(input);
           sendData(_subject);
           sendData(_data);
-          sendData("\r\n.\r\nquit");
+          sendData("\r\n.\r");
           _step++;
         }
     }
