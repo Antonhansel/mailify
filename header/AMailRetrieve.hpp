@@ -7,7 +7,7 @@
 
 class AMailRetrieve {
 public:
-    virtual ~AMailRetrieve() = 0;
+    virtual ~AMailRetrieve() {};
     virtual void connect(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)>) = 0;
     virtual void getMails(std::function<void (std::vector<AMail *>)>) = 0;
 };

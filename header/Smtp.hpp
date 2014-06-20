@@ -16,6 +16,8 @@
 # include <iostream>
 # include <QLineEdit>
 
+#include "BestSocketEver.hpp"
+
 class Connexion;
 
 class Smtp : public QWidget
@@ -34,8 +36,6 @@ public:
 	void 	initConnexion(QString &, QString &, QString &, int, std::function<void (std::string)>);
 	QString &username();
 public slots:
-	void 	_ready();
-	void 	getInput();
 	void 	readTcpData();
 private:
 	QString			_subject;
@@ -49,11 +49,7 @@ private:
 	QString			_password;
 	QString			_server;
 	int 			_step;
-	QSslSocket  	*_pSocket;
-	QTextEdit	    *_consoleText;
-	QWidget 		*_window;
-	QGridLayout	 	*_mainLayout;
-	QLineEdit		*_lineedit;
+	BestSocketEver  _pSocket;
 };
 
 #endif /* _SMTP_HPP_ */

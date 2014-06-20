@@ -10,6 +10,6 @@ QT += network
 CONFIG += c++11
 
 # Input
-HEADERS += header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp
-SOURCES += srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/pop3.cpp
+HEADERS += header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp header/BestSocketEver.hpp
+SOURCES += srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/pop3.cpp srcs/BestSocketEver.cpp
 
