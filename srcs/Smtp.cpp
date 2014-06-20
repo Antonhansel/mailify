@@ -158,12 +158,18 @@ void Smtp::readTcpData()
   }
   else if (_step == 3 && data.startsWith("334"))
   {
-   sendData(_username);
+    if (_username.endsWith("@gmail.com"))
+        sendData(_username.toUtf8().toBase64());
+    else
+        sendData(_username);
    _step++;
   }
   else if (_step == 4 && data.startsWith("334"))
   {
-    sendData(_password);
+    if (_username.endsWith("@gmail.com"))
+        sendData(_password.toUtf8().toBase64());
+    else
+        sendData(_password);
     _step++;
   }
   else if (_step == 5 && data.startsWith("235"))
@@ -176,5 +182,10 @@ void Smtp::readTcpData()
   {
     _callback->callbackSmtp("Error with login");
   }
+}
+
+QString &Smtp::username()
+{
+  return _username;
 }
 

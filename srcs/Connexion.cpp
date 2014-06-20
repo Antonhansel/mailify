@@ -31,10 +31,6 @@ void  Connexion::tryConnect()
         _errorLabel->setText("Fill every field");
         return;
     }
-    QByteArray  addr64 = _addressString.toUtf8();
-    QByteArray  pass64 = _passString.toUtf8();
-    _addressString = addr64.toBase64();
-    _passString = pass64.toBase64();
     _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), this);
 }
 

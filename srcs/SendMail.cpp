@@ -46,6 +46,7 @@ void SendMail::initInputs()
   _send = new QPushButton(this);
   _send->setText("Send message");
   _from = new QLineEdit(this);
+  _from->setText(_parent->smtp()->username());
   _fromLabel = new QLabel(this);
   _fromLabel->setText("From: ");
   _fromLabel->setFixedWidth(130);
