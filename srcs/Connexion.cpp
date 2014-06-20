@@ -31,17 +31,14 @@ void  Connexion::tryConnect()
         _errorLabel->setText("Fill every field");
         return;
     }
-    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), this);
-}
-
-void  Connexion::callbackSmtp(std::string error)
-{
-    if (error.size())
-    {
-        _errorLabel->setText(error.c_str());
-        return;
-    }
-    this->_window->hide();
+    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), [this] (std::string error) {
+        if (error.size())
+        {
+            _errorLabel->setText(error.c_str());
+            return;
+        }
+        this->_window->hide();
+    });
 }
 
 void  Connexion::initConnexionStuff()

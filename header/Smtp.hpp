@@ -31,7 +31,7 @@ public:
 	void 	setTo(QString);
 	void 	setData(QString);
 	void 	setSubject(QString);
-	void 	initConnexion(QString &, QString &, QString &, int, Connexion *);
+	void 	initConnexion(QString &, QString &, QString &, int, std::function<void (std::string)>);
 	QString &username();
 public slots:
 	void 	_ready();
@@ -44,7 +44,7 @@ private:
 	QString			_from;
 	int 			_port;
 	bool 			_connected;
-	Connexion 		*_callback;
+	std::function<void (std::string)> 		_callback;
 	QString			_username;
 	QString			_password;
 	QString			_server;

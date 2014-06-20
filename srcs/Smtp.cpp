@@ -22,7 +22,7 @@ Smtp::Smtp()
         this,SLOT(getInput(void)));
 }
 
-void Smtp::initConnexion(QString &username, QString &password, QString &server, int port, Connexion *callback)
+void Smtp::initConnexion(QString &username, QString &password, QString &server, int port, std::function<void (std::string)> callback)
 {
     _username = username;
     _password = password;
@@ -168,13 +168,13 @@ void Smtp::readTcpData()
   }
   else if (_step == 5 && data.startsWith("235"))
   {
-    _callback->callbackSmtp("");
+    _callback("");
     _step++;
     _connected = true;
   }
   else if (_step == 5 && data.startsWith("535"))
   {
-    _callback->callbackSmtp("Error with login");
+    _callback("Error with login");
   }
 }
 

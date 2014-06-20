@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
+CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I. -I. -Iheader -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I.
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
@@ -50,7 +50,8 @@ SOURCES       = srcs/Smtp.cpp \
 		srcs/MainUI.cpp \
 		srcs/SendMail.cpp \
 		srcs/Connexion.cpp \
-		srcs/GetCredentials.cpp moc_Smtp.cpp \
+		srcs/GetCredentials.cpp \
+		srcs/pop3.cpp moc_Smtp.cpp \
 		moc_MainUI.cpp \
 		moc_SendMail.cpp \
 		moc_Connexion.cpp
@@ -60,6 +61,7 @@ OBJECTS       = Smtp.o \
 		SendMail.o \
 		Connexion.o \
 		GetCredentials.o \
+		pop3.o \
 		moc_Smtp.o \
 		moc_MainUI.o \
 		moc_SendMail.o \
@@ -110,6 +112,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf \
@@ -202,6 +205,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf \
@@ -266,6 +270,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf:
@@ -290,7 +295,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/mailify1.0.0 || mkdir -p .tmp/mailify1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/mailify1.0.0/ && $(COPY_FILE) --parents header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp .tmp/mailify1.0.0/ && $(COPY_FILE) --parents srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp .tmp/mailify1.0.0/ && (cd `dirname .tmp/mailify1.0.0` && $(TAR) mailify1.0.0.tar mailify1.0.0 && $(COMPRESS) mailify1.0.0.tar) && $(MOVE) `dirname .tmp/mailify1.0.0`/mailify1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/mailify1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/mailify1.0.0/ && $(COPY_FILE) --parents header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp .tmp/mailify1.0.0/ && $(COPY_FILE) --parents srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/pop3.cpp .tmp/mailify1.0.0/ && (cd `dirname .tmp/mailify1.0.0` && $(TAR) mailify1.0.0.tar mailify1.0.0 && $(COMPRESS) mailify1.0.0.tar) && $(MOVE) `dirname .tmp/mailify1.0.0`/mailify1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/mailify1.0.0
 
 
 clean:compiler_clean 
@@ -3386,6 +3391,9 @@ GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \
 		/usr/include/qt5/QtCore/qxmlstream.h \
 		/usr/include/qt5/QtCore/qtcoreversion.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GetCredentials.o srcs/GetCredentials.cpp
+
+pop3.o: srcs/pop3.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pop3.o srcs/pop3.cpp
 
 moc_Smtp.o: moc_Smtp.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Smtp.o moc_Smtp.cpp

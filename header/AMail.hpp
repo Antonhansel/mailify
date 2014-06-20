@@ -9,7 +9,7 @@ public:
     virtual QString &subject() = 0;
     virtual QString &sender() = 0;
     virtual QString &content() = 0;
-    virtual void delete() = 0;
+    virtual void delete(std::function<void (std::string)>) = 0;
 };
 
 #endif // A_MAIL_HPP
