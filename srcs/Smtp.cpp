@@ -64,7 +64,7 @@ void Smtp::initSmtp()
 
 void Smtp::_ready()
 {
-    _callback->callbackSmtp("");
+
 }
 
 bool Smtp::isConnected() const
@@ -74,6 +74,11 @@ bool Smtp::isConnected() const
 
 void  Smtp::setFrom(QString from)
 {
+  QString tmp;
+    tmp = "MAIL FROM: ";
+    tmp += _from;
+    sendData(tmp);
+
   _from = from;
 }
 
@@ -99,7 +104,7 @@ void Smtp::readTcpData()
   _consoleText->append(data);
   if (_connected == true)
   {
-    if (data.startsWith("250") || data.startsWith("354")) 
+    if (data.startsWith("250") || data.startsWith("354"))
     {
         if (_step == 6)
         {
@@ -162,11 +167,13 @@ void Smtp::readTcpData()
   }
   else if (_step == 5 && data.startsWith("235"))
   {
+    _callback->callbackSmtp("");
     _step++;
     _connected = true;
-    input = "MAIL FROM: ";
-    input += _from;
-    sendData(input);
+  }
+  else if (_step == 5 && data.startsWith("535"))
+  {
+    _callback->callbackSmtp("Error with login");
   }
 }
 
