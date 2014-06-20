@@ -1,8 +1,8 @@
 #include "SendMail.hpp"
 
-SendMail::SendMail(Connexion *connexion)
+SendMail::SendMail(QWidget *parent)
 {
-  _connexion = connexion;
+  _parent = parent;
   this->_window = new QWidget;
   this->_window->setFixedSize(1000, 1000);
   this->_window->setWindowTitle(tr("Send a new mail"));
@@ -23,7 +23,7 @@ SendMail::SendMail(Connexion *connexion)
 
 void  SendMail::sendMessage()
 {
-  Smtp *smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
+  // Smtp *smtp = new Smtp(_connexion->getUsername(), _connexion->getPassword());
 }
 
 void SendMail::initInputs()

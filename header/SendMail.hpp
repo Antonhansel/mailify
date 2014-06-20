@@ -13,11 +13,11 @@ class SendMail : public QWidget
 public slots:
 	void 	sendMessage();
 public:
-	SendMail(Connexion *connexion);
+	SendMail(QWidget *);
 	~SendMail();
 	void 	initInputs();
 private:
-	Connexion 	*_connexion;
+	QWidget 	*_parent;
 	QPushButton	*_send;
 	QLabel 		*_fromLabel;
 	QLabel		*_toLabel;

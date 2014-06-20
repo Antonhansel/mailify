@@ -11,7 +11,7 @@ void		MainUI::foldersLayout()
 }
 
 void	MainUI::applyLayouts()
-{ 
+{
   _mainLayout->setMenuBar(_menuBar);
   _mainLayout->addWidget(_time, 0, 0);
   _mainLayout->addWidget(_folders, 1, 0);
@@ -92,7 +92,7 @@ void            MainUI::showAbout() const
   QMessageBox msgBox;
 
   msgBox.setText("- Mailify -");
-  msgBox.setInformativeText("A simple mail client in C++ using Qt Framework, by ribeau_a\n");
+  msgBox.setInformativeText("A simple mail client in C++ using Qt Framework, by ribeau_a and besson_g\n");
   msgBox.setStandardButtons(QMessageBox::Ok);
   msgBox.exec();
 }
@@ -109,6 +109,12 @@ MainUI::MainUI() : QWidget()
   applyLayouts();
   connectSlots();
   setLayout(_mainLayout);
-  _connexion = new Connexion();
+  _connexion = new Connexion(this);
+  _smtp = new Smtp();
+}
+
+Smtp *MainUI::smtp()
+{
+  return _smtp;
 }
 
