@@ -31,7 +31,7 @@ public:
 	void 	setTo(QString);
 	void 	setData(QString);
 	void 	setSubject(QString);
-	void 	initConnexion(QString &, QString &, QString &, Connexion *);
+	void 	initConnexion(QString &, QString &, QString &, int, Connexion *);
 public slots:
 	void 	_ready();
 	void 	getInput();
@@ -41,6 +41,7 @@ private:
 	QString			_data;
 	QString			_to;
 	QString			_from;
+	int 			_port;
 	bool 			_connected;
 	Connexion 		*_callback;
 	QString			_username;

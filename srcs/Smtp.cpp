@@ -22,11 +22,12 @@ Smtp::Smtp()
         this,SLOT(getInput(void)));
 }
 
-void Smtp::initConnexion(QString &username, QString &password, QString &server, Connexion *callback)
+void Smtp::initConnexion(QString &username, QString &password, QString &server, int port, Connexion *callback)
 {
     _username = username;
     _password = password;
     _server = server;
+    _port = port;
     _callback = callback;
     _step = -1;
     initSmtp();
@@ -57,7 +58,7 @@ void Smtp::initSmtp()
     _pSocket = new QSslSocket(this);
     connect(_pSocket, SIGNAL(encrypted()), this, SLOT(_ready()));
     connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
-    _pSocket->connectToHost(_server, PORT);
+    _pSocket->connectToHost(_server, _port);
     if (_pSocket->waitForConnected())
         _consoleText->append("Connexion established.");
 }

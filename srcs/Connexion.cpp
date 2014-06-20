@@ -9,8 +9,10 @@ void	Connexion::applyLayouts()
     _mainLayout->addWidget(_pass, 1, 1);
     _mainLayout->addWidget(_serverAddressLabel, 2, 0);
     _mainLayout->addWidget(_serverAddress, 2, 1);
-    _mainLayout->addWidget(_errorLabel, 3, 0);
-    _mainLayout->addWidget(_connect, 3, 1);
+    _mainLayout->addWidget(_portLabel, 3, 0);
+    _mainLayout->addWidget(_port, 3, 1);
+    _mainLayout->addWidget(_errorLabel, 4, 0);
+    _mainLayout->addWidget(_connect, 4, 1);
 }
 
 void Connexion::connectSlots()
@@ -23,7 +25,8 @@ void  Connexion::tryConnect()
     _addressString = _address->text();
     _passString = _pass->text();
     _serverAddressString = _serverAddress->text();
-    if (!_addressString.size() || !_passString.size() || !_serverAddressString.size())
+    _portString = _port->text();
+    if (!_addressString.size() || !_passString.size() || !_serverAddressString.size() || !_portString.size())
     {
         _errorLabel->setText("Fill every field");
         return;
@@ -32,7 +35,7 @@ void  Connexion::tryConnect()
     QByteArray  pass64 = _passString.toUtf8();
     _addressString = addr64.toBase64();
     _passString = pass64.toBase64();
-    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, this);
+    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), this);
 }
 
 void  Connexion::callbackSmtp(std::string error)
@@ -56,8 +59,13 @@ void  Connexion::initConnexionStuff()
     _passLabel = new QLabel(this);
     _passLabel->setText("Password");
     _serverAddress = new QLineEdit(this);
+    _serverAddress->setText("smtp.gmail.com");
     _serverAddressLabel = new QLabel(this);
     _serverAddressLabel->setText("Server Address");
+    _port = new QLineEdit(this);
+    _port->setText("587");
+    _portLabel = new QLabel(this);
+    _portLabel->setText("Server Port");
     _connect = new QPushButton(this);
     _connect->setText("Connect!");
     _errorLabel = new QLabel(this);
