@@ -20,7 +20,6 @@ Smtp::Smtp()
     _window->setLayout(_mainLayout);
     QObject::connect(_lineedit, SIGNAL(returnPressed()),
         this,SLOT(getInput(void)));
-    initSmtp();
 }
 
 void Smtp::initConnexion(QString &username, QString &password, QString &server, Connexion *callback)
