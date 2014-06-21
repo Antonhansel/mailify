@@ -5,7 +5,7 @@
 
 class AMail {
 public:
-    virtual ~AMail() = 0;
+    virtual ~AMail() {};
     virtual QString &subject() = 0;
     virtual QString &sender() = 0;
     virtual QString &content() = 0;

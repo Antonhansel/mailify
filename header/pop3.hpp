@@ -19,6 +19,21 @@ private:
     QString                             _user;
     QString                             _pass;
     int                                 _port;
+    std::vector<AMail *>                _mails;
+};
+
+class pop3Mail : public AMail {
+public:
+    ~pop3Mail() {};
+    QString &subject();
+    QString &sender();
+    QString &content();
+    void remove(std::function<void (std::string)>);
+    void parseFromData(QByteArray &);
+private:
+    QString     _subject;
+    QString     _sender;
+    QString     _content;
 };
 
 #endif // POP3_HPP

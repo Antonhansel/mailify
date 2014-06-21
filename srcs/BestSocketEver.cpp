@@ -28,7 +28,6 @@ qint64  BestSocketEver::write(const QByteArray &byteArray)
 
 QByteArray BestSocketEver::readAll()
 {
-    // QMutexLocker lock(&_receiveMutex);
     QByteArray tmp = QSslSocket::readAll();
     _monitor->_consoleText->append(tmp.data());
     return (tmp);

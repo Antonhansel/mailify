@@ -7,7 +7,7 @@ TARGET = mailify
 INCLUDEPATH += . header
 QT += widgets
 QT += network
-CONFIG += c++11
+CONFIG += c++11 debug
 
 # Input
 HEADERS += header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp header/BestSocketEver.hpp
