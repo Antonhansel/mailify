@@ -4,13 +4,19 @@ BestSocketEver::BestSocketEver()
 {
     _connected = false;
     _monitor = new BestSocketEverMonitor;
+    connect(this, SIGNAL(readyRead()), SLOT(_receiving()));
 }
 
 void  BestSocketEver::sendData(QString input)
 {
-    _monitor->_consoleText->append(input);
     input += '\n';
     write(input.toUtf8());
+}
+
+void BestSocketEver::connectToHost(const QString &address, quint16 port, QIODevice::OpenMode mode)
+{
+    _monitor->_consoleText->append("Connecting to : " + address);
+    QSslSocket::connectToHost(address, port, mode);
 }
 
 qint64  BestSocketEver::write(const QByteArray &byteArray)
@@ -24,6 +30,27 @@ QByteArray BestSocketEver::readAll()
     QByteArray tmp = QSslSocket::readAll();
     _monitor->_consoleText->append(tmp.data());
     return (tmp);
+}
+
+void       BestSocketEver::addNextCallback(std::function<void (QByteArray)> callback)
+{
+    _callbacks.push(callback);
+}
+
+void        BestSocketEver::clearCallbacks()
+{
+    while (!_callbacks.empty())
+        _callbacks.pop();
+}
+
+void       BestSocketEver::_receiving()
+{
+    if (!_callbacks.size())
+        return;
+    QByteArray tmp = readAll();
+    auto callback = _callbacks.front();
+    _callbacks.pop();
+    return callback(tmp);
 }
 
 BestSocketEverMonitor::BestSocketEverMonitor()

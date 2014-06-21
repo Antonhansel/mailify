@@ -9,6 +9,8 @@
 # include <QtCore>
 # include <iostream>
 # include <QLineEdit>
+# include <QString>
+# include <queue>
 
 class BestSocketEver;
 
@@ -34,13 +36,15 @@ public:
     void    sendData(QString input);
     qint64  write(const QByteArray &byteArray);
     QByteArray      readAll();
-// public slots:
-//     void    _ready();
-//     void    readTcpData();
+    void            addNextCallback(std::function<void (QByteArray)>);
+    void            clearCallbacks();
+    void            connectToHost(const QString &, quint16, QIODevice::OpenMode openMode = ReadWrite);
+private slots:
+    void            _receiving();
 private:
     int             _port;
     bool            _connected;
-    std::function<void (std::string)>       _callback;
+    std::queue<std::function<void (QByteArray)>>       _callbacks;
     BestSocketEverMonitor *_monitor;
 };
 
