@@ -885,6 +885,20 @@ moc_MainUI.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtCore/QString \
 		/usr/include/qt5/QtCore/QTime \
 		/usr/include/qt5/QtCore/QTimer \
+		/usr/include/qt5/QtWidgets/QListWidget \
+		/usr/include/qt5/QtWidgets/qlistwidget.h \
+		/usr/include/qt5/QtWidgets/qlistview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qtabwidget.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -2692,6 +2706,20 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/QString \
 		/usr/include/qt5/QtCore/QTime \
 		/usr/include/qt5/QtCore/QTimer \
+		/usr/include/qt5/QtWidgets/QListWidget \
+		/usr/include/qt5/QtWidgets/qlistwidget.h \
+		/usr/include/qt5/QtWidgets/qlistview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qtabwidget.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -3023,6 +3051,20 @@ MainUI.o: srcs/MainUI.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/QString \
 		/usr/include/qt5/QtCore/QTime \
 		/usr/include/qt5/QtCore/QTimer \
+		/usr/include/qt5/QtWidgets/QListWidget \
+		/usr/include/qt5/QtWidgets/qlistwidget.h \
+		/usr/include/qt5/QtWidgets/qlistview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qtabwidget.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -3410,6 +3452,20 @@ SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
 		/usr/include/qt5/QtWidgets/qradiobutton.h \
 		header/GetCredentials.hpp \
 		header/MainUI.hpp \
+		/usr/include/qt5/QtWidgets/QListWidget \
+		/usr/include/qt5/QtWidgets/qlistwidget.h \
+		/usr/include/qt5/QtWidgets/qlistview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qtabwidget.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
 		header/Imap.hpp \
 		header/AMailRetrieve.hpp \
 		header/AMail.hpp
@@ -3740,6 +3796,20 @@ Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
 		/usr/include/qt5/QtCore/QMutexLocker \
 		header/GetCredentials.hpp \
 		header/MainUI.hpp \
+		/usr/include/qt5/QtWidgets/QListWidget \
+		/usr/include/qt5/QtWidgets/qlistwidget.h \
+		/usr/include/qt5/QtWidgets/qlistview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qtabwidget.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
 		header/SendMail.hpp \
 		header/Imap.hpp \
 		header/AMailRetrieve.hpp \
