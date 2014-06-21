@@ -21,6 +21,9 @@ void	MainUI::applyLayouts()
 
 void MainUI::updateMails()
 {
+  if (!_connexion->_popChoose->isChecked())
+  {
+  }
   _mailRetrieve->getMails([] (std::vector<AMail *> mails){
       for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
       {

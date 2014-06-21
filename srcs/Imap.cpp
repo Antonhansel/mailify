@@ -29,11 +29,43 @@ void Imap::initConnexion(QString &user, QString &pass, QString &server, int port
         _socket.sendData("tag list \"\" \"*\"\r");
     });
     _socket.addNextCallback([this, callback] (QByteArray data) {
-        if (!data.endsWith("tag OK Success"))
+        if (!data.startsWith("* LIST"))
         {
             _socket.clearCallbacks();
             return callback("Cant list folders");
         }
+        _socket.sendData("tag status inbox (messages)\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.startsWith("* STATUS"))
+        {
+            _socket.clearCallbacks();
+            return callback("Cant list mails");
+        }
+        _socket.sendData("tag status inbox (unseen)\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.startsWith("* STATUS"))
+        {
+            _socket.clearCallbacks();
+            return callback("Cant get unseen mail number");
+        }
+        _socket.sendData("tag SELECT \"inbox\"\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.startsWith("*"))
+        {
+            _socket.clearCallbacks();
+            return callback("Cant get unseen mail number");
+        }
+        _socket.sendData("UID fetch 1:* (FLAGS)\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        // if (!data.startsWith("*"))
+        // {
+        //     _socket.clearCallbacks();
+        //     return callback("Cant select inbox");
+        // }
         callback("");
     });
     _socket.connectToHost(_server, _port);
@@ -62,7 +94,7 @@ void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
     //     }, [] (QByteArray data) {return data.endsWith(".\r\n");});
     // }
     // _socket.sendData("RETR 1");
-}
+}   
 
 QString &ImapMail::subject()
 {

@@ -39,6 +39,8 @@ public:
   QString   getUsername() const;
   QString   getPassword() const;
   void  callbackSmtp(std::string);
+  QRadioButton  *_popChoose;
+  QRadioButton  *_imapChoose;
 public slots:
   void  tryConnect();
 private:
@@ -74,8 +76,6 @@ protected:
   QLabel        *_serverAddressLabel;
   QLineEdit     *_serverAddress;
   QString       _serverAddressString;
-  QRadioButton  *_popChoose;
-  QRadioButton  *_imapChoose;
   QGridLayout   *_mainLayout;
   QLabel        *_errorLabel;
   QPushButton   *_connect;
