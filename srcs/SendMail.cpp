@@ -24,21 +24,10 @@ SendMail::SendMail(MainUI *parent)
 
 void  SendMail::sendMessage()
 {
-  QString input;
-
   _smtp = _parent->smtp();
-  input = "<";
-  input += _from->text();
-  input += ">";
-  _smtp->setFrom(input);
-  input = "<";
-  input += _to->text();
-  input += ">";
-  _smtp->setTo(input);
-  input = "Subject: ";
-  input += _subject->text();
-  _smtp->setSubject(input);
-  _smtp->setData(_text->toPlainText());
+  _smtp->sendMail(_from->text(), _to->text(), _subject->text(), _text->toPlainText(), [] (std::string str) {
+    printf("Ended with : %s\n", str.c_str());
+  });
 }
 
 void SendMail::initInputs()

@@ -25,6 +25,7 @@
 # include <QString>
 # include <QTime>
 # include <QTimer>
+# include <QRadioButton>
 # include "Smtp.hpp"
 # include "GetCredentials.hpp"
 
@@ -73,6 +74,8 @@ protected:
   QLabel        *_serverAddressLabel;
   QLineEdit     *_serverAddress;
   QString       _serverAddressString;
+  QRadioButton  *_popChoose;
+  QRadioButton  *_imapChoose;
   QGridLayout   *_mainLayout;
   QLabel        *_errorLabel;
   QPushButton   *_connect;

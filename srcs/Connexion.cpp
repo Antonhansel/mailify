@@ -1,5 +1,6 @@
 #include "Connexion.hpp"
 #include "MainUI.hpp"
+#include "AMailRetrieve.hpp"
 #include "pop3.hpp"
 #include "imap.hpp"
 
@@ -17,8 +18,10 @@ void	Connexion::applyLayouts()
     _mainLayout->addWidget(_receiveServerAddress, 4, 1);
     _mainLayout->addWidget(_receivePortLabel, 5, 0);
     _mainLayout->addWidget(_receivePort, 5, 1);
-    _mainLayout->addWidget(_errorLabel, 6, 0);
-    _mainLayout->addWidget(_connect, 6, 1);
+    _mainLayout->addWidget(_popChoose, 6, 0);
+    _mainLayout->addWidget(_imapChoose, 6, 1);
+    _mainLayout->addWidget(_errorLabel, 7, 0);
+    _mainLayout->addWidget(_connect, 7, 1);
 }
 
 void Connexion::connectSlots()
@@ -49,8 +52,13 @@ void  Connexion::tryConnect()
         }
         this->_window->hide();
     });
-    auto imap = new Imap();
-    imap->initConnexion(_addressString, _passString, _receiveServerAddressString, atoi(_receivePortString.toUtf8()), [] (std::string) {});
+    AMailRetrieve *provider;
+    if (_popChoose->isChecked())
+        provider = new pop3();
+    else
+        provider = new Imap();
+    provider->initConnexion(_addressString, _passString, _receiveServerAddressString, atoi(_receivePortString.toUtf8()), [] (std::string) {});
+    _parent->mailRetrieve(provider);
 }
 
 void  Connexion::initConnexionStuff()
@@ -79,6 +87,9 @@ void  Connexion::initConnexionStuff()
     _receivePort->setText("993");
     _receivePortLabel = new QLabel(this);
     _receivePortLabel->setText("Server Port");
+    _popChoose = new QRadioButton("POP3", this);
+    _popChoose->setChecked(true);
+    _imapChoose = new QRadioButton("IMAP", this);
     _connect = new QPushButton(this);
     _connect->setText("Connect!");
     _errorLabel = new QLabel(this);
