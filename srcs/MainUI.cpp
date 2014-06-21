@@ -13,34 +13,28 @@ void		MainUI::foldersLayout()
 void	MainUI::applyLayouts()
 {
   _mainLayout->setMenuBar(_menuBar);
-  _mainLayout->addWidget(_time, 0, 0);
+  _mainLayout->addWidget(_update, 0, 0);
   _mainLayout->addWidget(_folders, 1, 0);
   _mainLayout->addWidget(_mailPreview, 1, 1);
-  // _mainLayout->addWidget(_input, 1, 1, Qt::AlignLeft);
   _mainLayout->addWidget(_send, 0, 1, Qt::AlignRight);
 }
 
-void  MainUI::timeLayout()
+void MainUI::updateMails()
 {
-  _time = new QLCDNumber;
-  _timer = new QTimer;
-
-  _time->setDigitCount(12);
-  _time->display(QTime::currentTime().toString(QString("hh:mm:ss")));
-  _time->setPalette(Qt::red);
-  _timer->start(100);
-  _time->setFixedSize((WIDTH/5), (HEIGHT/20));
-}
-
-void    MainUI::countTime()
-{
-  _time->display(QTime::currentTime().toString(QString("hh:mm:ss")));
+  _mailRetrieve->getMails([] (std::vector<AMail *> mails){
+      for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
+      {
+         printf("New mail : %s\n", (*i)->subject().toUtf8().data());
+          printf("From %s\n", (*i)->sender().toUtf8().data());
+          printf("-> %s\n", (*i)->content().toUtf8().data());
+      }
+  });
 }
 
 void MainUI::connectSlots()
 {
-  QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(countTime(void)));
   QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMail(void)));
+  QObject::connect(_update, SIGNAL(clicked()), this,SLOT(updateMails(void)));
 }
 
 void  MainUI::mailPreviewLayout()
@@ -72,7 +66,6 @@ void	MainUI::initLayouts()
   mailPreviewLayout();
   menuBar();
   initButtons();
-  timeLayout();
 }
 
 void MainUI::sendMail()
@@ -100,6 +93,7 @@ void            MainUI::showAbout() const
 void        MainUI::initButtons()
 {
   _send = new QPushButton("Write a mail");
+  _update = new QPushButton("Update mails");
 }
 
 MainUI::MainUI() : QWidget()
@@ -109,12 +103,21 @@ MainUI::MainUI() : QWidget()
   applyLayouts();
   connectSlots();
   setLayout(_mainLayout);
-  _connexion = new Connexion(this);
   _smtp = new Smtp();
+  _connexion = new Connexion(this);
 }
 
 Smtp *MainUI::smtp()
 {
   return _smtp;
+}
+
+AMailRetrieve *MainUI::mailRetrieve()
+{
+  return _mailRetrieve;
+}
+void MainUI::mailRetrieve(AMailRetrieve *mailRetrive)
+{
+  _mailRetrieve = mailRetrive;
 }
 
