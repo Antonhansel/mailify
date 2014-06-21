@@ -27,6 +27,7 @@ private:
 	QLabel 		*_fromLabel;
 	QLabel		*_toLabel;
 	QLabel		*_subjectLabel;
+	QLabel		*_errorLabel;
 	QGridLayout *_mainLayout;
 	QLineEdit 	*_from;
 	QLineEdit 	*_to;
