@@ -21,20 +21,22 @@ void BestSocketEver::connectToHost(const QString &address, quint16 port, QIODevi
 
 qint64  BestSocketEver::write(const QByteArray &byteArray)
 {
+    QMutexLocker lock(&_sendMutex);
     _monitor->_consoleText->append(byteArray);
     return QSslSocket::write(byteArray);
 }
 
 QByteArray BestSocketEver::readAll()
 {
+    // QMutexLocker lock(&_receiveMutex);
     QByteArray tmp = QSslSocket::readAll();
     _monitor->_consoleText->append(tmp.data());
     return (tmp);
 }
 
-void       BestSocketEver::addNextCallback(std::function<void (QByteArray)> callback)
+void       BestSocketEver::addNextCallback(std::function<void (QByteArray)> callback, std::function<bool (QByteArray)> waiterFunction)
 {
-    _callbacks.push(callback);
+    _callbacks.push(std::make_pair(callback, waiterFunction));
 }
 
 void        BestSocketEver::clearCallbacks()
@@ -45,12 +47,21 @@ void        BestSocketEver::clearCallbacks()
 
 void       BestSocketEver::_receiving()
 {
+    static QByteArray buffer;
+    QByteArray tmp;
+
     if (!_callbacks.size())
         return;
-    QByteArray tmp = readAll();
+    QMutexLocker lock(&_receiveMutex);
+    buffer.append(readAll());
     auto callback = _callbacks.front();
-    _callbacks.pop();
-    return callback(tmp);
+    if (callback.second(buffer))
+    {
+        tmp = buffer;
+        buffer.clear();
+        _callbacks.pop();
+        return callback.first(tmp);
+    }
 }
 
 BestSocketEverMonitor::BestSocketEverMonitor()

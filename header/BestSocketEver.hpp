@@ -10,7 +10,9 @@
 # include <iostream>
 # include <QLineEdit>
 # include <QString>
+# include <QMutex>
 # include <queue>
+# include <QMutexLocker>
 
 class BestSocketEver;
 
@@ -36,15 +38,17 @@ public:
     void    sendData(QString input);
     qint64  write(const QByteArray &byteArray);
     QByteArray      readAll();
-    void            addNextCallback(std::function<void (QByteArray)>);
+    void            addNextCallback(std::function<void (QByteArray)>, std::function<bool (QByteArray)> = [] (QByteArray) {return true;});
     void            clearCallbacks();
     void            connectToHost(const QString &, quint16, QIODevice::OpenMode openMode = ReadWrite);
 private slots:
     void            _receiving();
 private:
+    QMutex          _sendMutex;
+    QMutex          _receiveMutex;
     int             _port;
     bool            _connected;
-    std::queue<std::function<void (QByteArray)>>       _callbacks;
+    std::queue<std::pair<std::function<void (QByteArray)>, std::function<bool (QByteArray)>>>       _callbacks;
     BestSocketEverMonitor *_monitor;
 };
 
