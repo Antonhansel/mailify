@@ -1,5 +1,6 @@
 #include "Connexion.hpp"
 #include "MainUI.hpp"
+#include "pop3.hpp"
 
 void	Connexion::applyLayouts()
 {
@@ -11,8 +12,12 @@ void	Connexion::applyLayouts()
     _mainLayout->addWidget(_serverAddress, 2, 1);
     _mainLayout->addWidget(_portLabel, 3, 0);
     _mainLayout->addWidget(_port, 3, 1);
-    _mainLayout->addWidget(_errorLabel, 4, 0);
-    _mainLayout->addWidget(_connect, 4, 1);
+    _mainLayout->addWidget(_receiveServerAddressLabel, 4, 0);
+    _mainLayout->addWidget(_receiveServerAddress, 4, 1);
+    _mainLayout->addWidget(_receivePortLabel, 5, 0);
+    _mainLayout->addWidget(_receivePort, 5, 1);
+    _mainLayout->addWidget(_errorLabel, 6, 0);
+    _mainLayout->addWidget(_connect, 6, 1);
 }
 
 void Connexion::connectSlots()
@@ -26,22 +31,25 @@ void  Connexion::tryConnect()
     _passString = _pass->text();
     _serverAddressString = _serverAddress->text();
     _portString = _port->text();
-    if (!_addressString.size() || !_passString.size() || !_serverAddressString.size() || !_portString.size())
+    _receiveServerAddressString = _receiveServerAddress->text();
+    _receivePortString = _receivePort->text();
+    if (!_addressString.size() || !_passString.size()
+        || !_serverAddressString.size() || !_portString.size()
+        || !_receiveServerAddressString.size() || !_receivePortString.size())
     {
         _errorLabel->setText("Fill every field");
         return;
     }
-    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), this);
-}
-
-void  Connexion::callbackSmtp(std::string error)
-{
-    if (error.size())
-    {
-        _errorLabel->setText(error.c_str());
-        return;
-    }
-    this->_window->hide();
+    _parent->smtp()->initConnexion(_addressString, _passString, _serverAddressString, atoi(_portString.toUtf8()), [this] (std::string error) {
+        if (error.size())
+        {
+            _errorLabel->setText(error.c_str());
+            return;
+        }
+        this->_window->hide();
+    });
+    auto pop = new pop3();
+    pop->initConnexion(_addressString, _passString, _receiveServerAddressString, atoi(_receivePortString.toUtf8()), [] (std::string) {});
 }
 
 void  Connexion::initConnexionStuff()
@@ -62,6 +70,14 @@ void  Connexion::initConnexionStuff()
     _port->setText("587");
     _portLabel = new QLabel(this);
     _portLabel->setText("Server Port");
+    _receiveServerAddress = new QLineEdit(this);
+    _receiveServerAddress->setText("pop.gmail.com");
+    _receiveServerAddressLabel = new QLabel(this);
+    _receiveServerAddressLabel->setText("Receive Server Address");
+    _receivePort = new QLineEdit(this);
+    _receivePort->setText("995");
+    _receivePortLabel = new QLabel(this);
+    _receivePortLabel->setText("Server Port");
     _connect = new QPushButton(this);
     _connect->setText("Connect!");
     _errorLabel = new QLabel(this);

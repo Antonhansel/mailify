@@ -3,26 +3,9 @@
 
 Smtp::Smtp()
 {
-  _connected = false;
-    _window = new QWidget;
-    if (DEBUG)
-        _window->show();
-    _window->setFixedSize(500, 500);
-    _window->setWindowTitle(tr("Debug Smtp"));
-    _consoleText = new QTextEdit(this);
-    _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
-    _consoleText->setReadOnly(true);
-    _consoleText->setStyleSheet("color: green ; background-color: black");
-    _lineedit = new QLineEdit(this);
-    _mainLayout = new QGridLayout;
-    _mainLayout->addWidget(_consoleText, 0, 0);
-    _mainLayout->addWidget(_lineedit, 1, 0);
-    _window->setLayout(_mainLayout);
-    QObject::connect(_lineedit, SIGNAL(returnPressed()),
-        this,SLOT(getInput(void)));
 }
 
-void Smtp::initConnexion(QString &username, QString &password, QString &server, int port, Connexion *callback)
+void Smtp::initConnexion(QString &username, QString &password, QString &server, int port, std::function<void (std::string)> callback)
 {
     _username = username;
     _password = password;
@@ -33,32 +16,16 @@ void Smtp::initConnexion(QString &username, QString &password, QString &server, 
     initSmtp();
 }
 
-void  Smtp::getInput()
-{
-    _lineedit->setText("");
-    sendData(_lineedit->text());
-}
-
 void  Smtp::sendData(QString input)
 {
-    _consoleText->append(input);
-    input += '\n';
-    _pSocket->write(input.toUtf8());
+    _pSocket.sendData(input);
 }
 
 void Smtp::initSmtp()
 {
-    _pSocket = new QSslSocket(this);
-    connect(_pSocket, SIGNAL(encrypted()), this, SLOT(_ready()));
-    connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
-    _pSocket->connectToHost(_server, _port);
-    if (_pSocket->waitForConnected())
-        _consoleText->append("Connexion established.");
-}
-
-void Smtp::_ready()
-{
-  
+    connect(&_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
+    _pSocket.connectToHost(_server, _port);
+    _pSocket.waitForConnected();
 }
 
 bool Smtp::isConnected() const
@@ -95,8 +62,7 @@ void  Smtp::setSubject(QString subject)
 void Smtp::readTcpData()
 {
   QString input;
-  QByteArray   	data = _pSocket->readAll();
-  _consoleText->append(data);
+  QByteArray   	data = _pSocket.readAll();
   if (_connected == true)
   {
     if (data.startsWith("250 2.1") || data.startsWith("354"))
@@ -140,7 +106,7 @@ void Smtp::readTcpData()
   }
   else if (_step == 1 && data.startsWith("220 2.0.0 Ready to start TLS"))
   {
-    _pSocket->startClientEncryption();
+    _pSocket.startClientEncryption();
     usleep(300);
     sendData("EHLO google.fr");
     _step++;
@@ -168,13 +134,13 @@ void Smtp::readTcpData()
   }
   else if (_step == 5 && data.startsWith("235"))
   {
-    _callback->callbackSmtp("");
+    _callback("");
     _step++;
     _connected = true;
   }
   else if (_step == 5 && data.startsWith("535"))
   {
-    _callback->callbackSmtp("Error with login");
+    _callback("Error with login");
   }
 }
 

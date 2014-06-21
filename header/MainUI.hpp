@@ -1,5 +1,5 @@
 #ifndef MAIN_UI_HPP_
-# define MAIN_UI__HPP_
+# define MAIN_UI_HPP_
 
 #define WIDTH 600
 #define HEIGHT 800
@@ -31,6 +31,7 @@
 # include "SendMail.hpp"
 # include "Connexion.hpp"
 # include "Imap.hpp"
+# include "AMailRetrieve.hpp"
 
 class	MainUI: public	QWidget
 {
@@ -38,25 +39,25 @@ class	MainUI: public	QWidget
 public:
   MainUI();
   Smtp *smtp();
+  AMailRetrieve *mailRetrieve();
+  void mailRetrieve(AMailRetrieve *);
 public slots:
-  void  countTime();
   void  showAbout() const;
   void  sendMail();
-  void  fetchMails();
+  void  updateMails();
 private:
   void  connectSlots();
   void  initLayouts();
   void  foldersLayout();
   void  initUi();
   void  applyLayouts();
-  void  timeLayout();
   void  mailPreviewLayout();
   void  menuBar();
   void  initButtons();
 protected:
-  Imap        *_imap;
   Connexion   *_connexion;
   Smtp        *_smtp;
+  AMailRetrieve *_mailRetrieve;
   SendMail     *_sendMail;
   QAction	     *_exitAction;
   QAction	     *_toggleStatus;
@@ -69,9 +70,7 @@ protected:
   QTextEdit	   *_mailPreview;
   QLabel	     *_input;
   QPushButton	 *_send;
-  QLCDNumber	 *_time;
-  QTimer	     *_timer;
-  QTimer	     *_timerec;
+  QPushButton  *_update;
   QLineEdit	   *_lineedit;
 };
 

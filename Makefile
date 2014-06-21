@@ -12,12 +12,12 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
+DEFINES       = -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+CFLAGS        = -m64 -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
+CXXFLAGS      = -m64 -pipe -g -std=c++0x -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I. -I. -Iheader -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I.
 LINK          = g++
-LFLAGS        = -m64 -Wl,-O1
+LFLAGS        = -m64
 LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Widgets -L/usr/lib/x86_64-linux-gnu -lQt5Network -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
@@ -45,29 +45,37 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = srcs/Connexion.cpp \
-		srcs/GetCredentials.cpp \
-		srcs/Imap.cpp \
+SOURCES       = srcs/Smtp.cpp \
 		srcs/main.cpp \
 		srcs/MainUI.cpp \
 		srcs/SendMail.cpp \
-		srcs/Smtp.cpp moc_Connexion.cpp \
-		moc_Imap.cpp \
+		srcs/Connexion.cpp \
+		srcs/GetCredentials.cpp \
+		srcs/pop3.cpp \
+		srcs/BestSocketEver.cpp \
+		srcs/Imap.cpp moc_Smtp.cpp \
 		moc_MainUI.cpp \
 		moc_SendMail.cpp \
-		moc_Smtp.cpp
-OBJECTS       = Connexion.o \
-		GetCredentials.o \
-		Imap.o \
+		moc_Connexion.cpp \
+		moc_AMailRetrieve.cpp \
+		moc_BestSocketEver.cpp \
+		moc_Imap.cpp
+OBJECTS       = Smtp.o \
 		main.o \
 		MainUI.o \
 		SendMail.o \
-		Smtp.o \
-		moc_Connexion.o \
-		moc_Imap.o \
+		Connexion.o \
+		GetCredentials.o \
+		pop3.o \
+		BestSocketEver.o \
+		Imap.o \
+		moc_Smtp.o \
 		moc_MainUI.o \
 		moc_SendMail.o \
-		moc_Smtp.o
+		moc_Connexion.o \
+		moc_AMailRetrieve.o \
+		moc_BestSocketEver.o \
+		moc_Imap.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -114,6 +122,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf \
@@ -159,6 +168,7 @@ all: Makefile $(TARGET)
 
 $(TARGET):  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
+	{ test -n "$(DESTDIR)" && DESTDIR="$(DESTDIR)" || DESTDIR=.; } && test $$(gdb --version | sed -e 's,[^0-9][^0-9]*\([0-9]\)\.\([0-9]\).*,\1\2,;q') -gt 72 && gdb --nx --batch --quiet -ex 'set confirm off' -ex "save gdb-index $$DESTDIR" -ex quit '$(TARGET)' && test -f $(TARGET).gdb-index && objcopy --add-section '.gdb_index=$(TARGET).gdb-index' --set-section-flags '.gdb_index=readonly' '$(TARGET)' '$(TARGET)' && rm -f $(TARGET).gdb-index || true
 
 Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.conf /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
@@ -206,6 +216,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf \
@@ -270,6 +281,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resolve_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_post.prf:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/c++11.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/gdb_dwarf_index.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/warn_on.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt.prf:
@@ -294,7 +306,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/mailify1.0.0 || mkdir -p .tmp/mailify1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/mailify1.0.0/ && $(COPY_FILE) --parents header/Connexion.hpp header/GetCredentials.hpp header/Imap.hpp header/MainUI.hpp header/SendMail.hpp header/Smtp.hpp .tmp/mailify1.0.0/ && $(COPY_FILE) --parents srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/Imap.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Smtp.cpp .tmp/mailify1.0.0/ && (cd `dirname .tmp/mailify1.0.0` && $(TAR) mailify1.0.0.tar mailify1.0.0 && $(COMPRESS) mailify1.0.0.tar) && $(MOVE) `dirname .tmp/mailify1.0.0`/mailify1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/mailify1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/mailify1.0.0/ && $(COPY_FILE) --parents header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp header/BestSocketEver.hpp header/Imap.hpp .tmp/mailify1.0.0/ && $(COPY_FILE) --parents srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/pop3.cpp srcs/BestSocketEver.cpp srcs/Imap.cpp .tmp/mailify1.0.0/ && (cd `dirname .tmp/mailify1.0.0` && $(TAR) mailify1.0.0.tar mailify1.0.0 && $(COMPRESS) mailify1.0.0.tar) && $(MOVE) `dirname .tmp/mailify1.0.0`/mailify1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/mailify1.0.0
 
 
 clean:compiler_clean 
@@ -317,331 +329,10 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_Connexion.cpp moc_Imap.cpp moc_MainUI.cpp moc_SendMail.cpp moc_Smtp.cpp
+compiler_moc_header_make_all: moc_Smtp.cpp moc_MainUI.cpp moc_SendMail.cpp moc_Connexion.cpp moc_AMailRetrieve.cpp moc_BestSocketEver.cpp moc_Imap.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_Connexion.cpp moc_Imap.cpp moc_MainUI.cpp moc_SendMail.cpp moc_Smtp.cpp
-moc_Connexion.cpp: /usr/include/qt5/QtCore/QtCore \
-		/usr/include/qt5/QtCore/QtCoreDepends \
-		/usr/include/qt5/QtCore/qabstractanimation.h \
-		/usr/include/qt5/QtCore/qobject.h \
-		/usr/include/qt5/QtCore/qobjectdefs.h \
-		/usr/include/qt5/QtCore/qnamespace.h \
-		/usr/include/qt5/QtCore/qglobal.h \
-		/usr/include/qt5/QtCore/qconfig.h \
-		/usr/include/qt5/QtCore/qfeatures.h \
-		/usr/include/qt5/QtCore/qsystemdetection.h \
-		/usr/include/qt5/QtCore/qprocessordetection.h \
-		/usr/include/qt5/QtCore/qcompilerdetection.h \
-		/usr/include/qt5/QtCore/qglobalstatic.h \
-		/usr/include/qt5/QtCore/qatomic.h \
-		/usr/include/qt5/QtCore/qbasicatomic.h \
-		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
-		/usr/include/qt5/QtCore/qgenericatomic.h \
-		/usr/include/qt5/QtCore/qatomic_msvc.h \
-		/usr/include/qt5/QtCore/qatomic_integrity.h \
-		/usr/include/qt5/QtCore/qoldbasicatomic.h \
-		/usr/include/qt5/QtCore/qatomic_vxworks.h \
-		/usr/include/qt5/QtCore/qatomic_power.h \
-		/usr/include/qt5/QtCore/qatomic_alpha.h \
-		/usr/include/qt5/QtCore/qatomic_armv7.h \
-		/usr/include/qt5/QtCore/qatomic_armv6.h \
-		/usr/include/qt5/QtCore/qatomic_armv5.h \
-		/usr/include/qt5/QtCore/qatomic_bfin.h \
-		/usr/include/qt5/QtCore/qatomic_ia64.h \
-		/usr/include/qt5/QtCore/qatomic_mips.h \
-		/usr/include/qt5/QtCore/qatomic_s390.h \
-		/usr/include/qt5/QtCore/qatomic_sh4a.h \
-		/usr/include/qt5/QtCore/qatomic_sparc.h \
-		/usr/include/qt5/QtCore/qatomic_gcc.h \
-		/usr/include/qt5/QtCore/qatomic_x86.h \
-		/usr/include/qt5/QtCore/qatomic_cxx11.h \
-		/usr/include/qt5/QtCore/qatomic_unix.h \
-		/usr/include/qt5/QtCore/qmutex.h \
-		/usr/include/qt5/QtCore/qlogging.h \
-		/usr/include/qt5/QtCore/qflags.h \
-		/usr/include/qt5/QtCore/qtypeinfo.h \
-		/usr/include/qt5/QtCore/qtypetraits.h \
-		/usr/include/qt5/QtCore/qsysinfo.h \
-		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
-		/usr/include/qt5/QtCore/qstring.h \
-		/usr/include/qt5/QtCore/qchar.h \
-		/usr/include/qt5/QtCore/qbytearray.h \
-		/usr/include/qt5/QtCore/qrefcount.h \
-		/usr/include/qt5/QtCore/qarraydata.h \
-		/usr/include/qt5/QtCore/qstringbuilder.h \
-		/usr/include/qt5/QtCore/qlist.h \
-		/usr/include/qt5/QtCore/qalgorithms.h \
-		/usr/include/qt5/QtCore/qiterator.h \
-		/usr/include/qt5/QtCore/qcoreevent.h \
-		/usr/include/qt5/QtCore/qscopedpointer.h \
-		/usr/include/qt5/QtCore/qmetatype.h \
-		/usr/include/qt5/QtCore/qvarlengtharray.h \
-		/usr/include/qt5/QtCore/qcontainerfwd.h \
-		/usr/include/qt5/QtCore/qisenum.h \
-		/usr/include/qt5/QtCore/qobject_impl.h \
-		/usr/include/qt5/QtCore/qanimationgroup.h \
-		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
-		/usr/include/qt5/QtCore/qpauseanimation.h \
-		/usr/include/qt5/QtCore/qpropertyanimation.h \
-		/usr/include/qt5/QtCore/qvariantanimation.h \
-		/usr/include/qt5/QtCore/qeasingcurve.h \
-		/usr/include/qt5/QtCore/qvector.h \
-		/usr/include/qt5/QtCore/qpoint.h \
-		/usr/include/qt5/QtCore/qvariant.h \
-		/usr/include/qt5/QtCore/qmap.h \
-		/usr/include/qt5/QtCore/qpair.h \
-		/usr/include/qt5/QtCore/qdebug.h \
-		/usr/include/qt5/QtCore/qhash.h \
-		/usr/include/qt5/QtCore/qtextstream.h \
-		/usr/include/qt5/QtCore/qiodevice.h \
-		/usr/include/qt5/QtCore/qlocale.h \
-		/usr/include/qt5/QtCore/qshareddata.h \
-		/usr/include/qt5/QtCore/qset.h \
-		/usr/include/qt5/QtCore/qcontiguouscache.h \
-		/usr/include/qt5/QtCore/qstringlist.h \
-		/usr/include/qt5/QtCore/qdatastream.h \
-		/usr/include/qt5/QtCore/qregexp.h \
-		/usr/include/qt5/QtCore/qstringmatcher.h \
-		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
-		/usr/include/qt5/QtCore/qtextcodec.h \
-		/usr/include/qt5/QtCore/qendian.h \
-		/usr/include/qt5/QtCore/qlibraryinfo.h \
-		/usr/include/qt5/QtCore/qdatetime.h \
-		/usr/include/qt5/QtCore/qsharedpointer.h \
-		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
-		/usr/include/qt5/QtCore/qnumeric.h \
-		/usr/include/qt5/QtCore/qbuffer.h \
-		/usr/include/qt5/QtCore/qdir.h \
-		/usr/include/qt5/QtCore/qfileinfo.h \
-		/usr/include/qt5/QtCore/qfile.h \
-		/usr/include/qt5/QtCore/qfiledevice.h \
-		/usr/include/qt5/QtCore/qdiriterator.h \
-		/usr/include/qt5/QtCore/qfileselector.h \
-		/usr/include/qt5/QtCore/QObject \
-		/usr/include/qt5/QtCore/QStringList \
-		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
-		/usr/include/qt5/QtCore/qlockfile.h \
-		/usr/include/qt5/QtCore/qloggingcategory.h \
-		/usr/include/qt5/QtCore/qprocess.h \
-		/usr/include/qt5/QtCore/qresource.h \
-		/usr/include/qt5/QtCore/qsavefile.h \
-		/usr/include/qt5/QtCore/qsettings.h \
-		/usr/include/qt5/QtCore/qstandardpaths.h \
-		/usr/include/qt5/QtCore/qtemporarydir.h \
-		/usr/include/qt5/QtCore/QScopedPointer \
-		/usr/include/qt5/QtCore/qtemporaryfile.h \
-		/usr/include/qt5/QtCore/qurl.h \
-		/usr/include/qt5/QtCore/qurlquery.h \
-		/usr/include/qt5/QtCore/qabstractitemmodel.h \
-		/usr/include/qt5/QtCore/qabstractproxymodel.h \
-		/usr/include/qt5/QtCore/qidentityproxymodel.h \
-		/usr/include/qt5/QtCore/qitemselectionmodel.h \
-		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
-		/usr/include/qt5/QtCore/qstringlistmodel.h \
-		/usr/include/qt5/QtCore/qjsonarray.h \
-		/usr/include/qt5/QtCore/qjsonvalue.h \
-		/usr/include/qt5/QtCore/qjsondocument.h \
-		/usr/include/qt5/QtCore/qjsonobject.h \
-		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
-		/usr/include/qt5/QtCore/qeventloop.h \
-		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
-		/usr/include/qt5/QtCore/qbasictimer.h \
-		/usr/include/qt5/QtCore/qcoreapplication.h \
-		/usr/include/qt5/QtCore/qmath.h \
-		/usr/include/qt5/QtCore/qmetaobject.h \
-		/usr/include/qt5/QtCore/qmimedata.h \
-		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
-		/usr/include/qt5/QtCore/qpointer.h \
-		/usr/include/qt5/QtCore/qsharedmemory.h \
-		/usr/include/qt5/QtCore/qsignalmapper.h \
-		/usr/include/qt5/QtCore/qsocketnotifier.h \
-		/usr/include/qt5/QtCore/qsystemsemaphore.h \
-		/usr/include/qt5/QtCore/qtimer.h \
-		/usr/include/qt5/QtCore/qtranslator.h \
-		/usr/include/qt5/QtCore/qwineventnotifier.h \
-		/usr/include/qt5/QtCore/qmimedatabase.h \
-		/usr/include/qt5/QtCore/qmimetype.h \
-		/usr/include/qt5/QtCore/qfactoryinterface.h \
-		/usr/include/qt5/QtCore/qlibrary.h \
-		/usr/include/qt5/QtCore/qplugin.h \
-		/usr/include/qt5/QtCore/qpluginloader.h \
-		/usr/include/qt5/QtCore/quuid.h \
-		/usr/include/qt5/QtCore/qabstractstate.h \
-		/usr/include/qt5/QtCore/qabstracttransition.h \
-		/usr/include/qt5/QtCore/qeventtransition.h \
-		/usr/include/qt5/QtCore/qfinalstate.h \
-		/usr/include/qt5/QtCore/qhistorystate.h \
-		/usr/include/qt5/QtCore/qsignaltransition.h \
-		/usr/include/qt5/QtCore/qstate.h \
-		/usr/include/qt5/QtCore/qstatemachine.h \
-		/usr/include/qt5/QtCore/qexception.h \
-		/usr/include/qt5/QtCore/qfuture.h \
-		/usr/include/qt5/QtCore/qfutureinterface.h \
-		/usr/include/qt5/QtCore/qrunnable.h \
-		/usr/include/qt5/QtCore/qresultstore.h \
-		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
-		/usr/include/qt5/QtCore/qfuturewatcher.h \
-		/usr/include/qt5/QtCore/qreadwritelock.h \
-		/usr/include/qt5/QtCore/qsemaphore.h \
-		/usr/include/qt5/QtCore/qthread.h \
-		/usr/include/qt5/QtCore/qthreadpool.h \
-		/usr/include/qt5/QtCore/qthreadstorage.h \
-		/usr/include/qt5/QtCore/qwaitcondition.h \
-		/usr/include/qt5/QtCore/qarraydataops.h \
-		/usr/include/qt5/QtCore/qarraydatapointer.h \
-		/usr/include/qt5/QtCore/qbitarray.h \
-		/usr/include/qt5/QtCore/qbytearraymatcher.h \
-		/usr/include/qt5/QtCore/qcache.h \
-		/usr/include/qt5/QtCore/qcollator.h \
-		/usr/include/qt5/QtCore/qcommandlineoption.h \
-		/usr/include/qt5/QtCore/qcommandlineparser.h \
-		/usr/include/qt5/QtCore/qcryptographichash.h \
-		/usr/include/qt5/QtCore/qelapsedtimer.h \
-		/usr/include/qt5/QtCore/qline.h \
-		/usr/include/qt5/QtCore/qlinkedlist.h \
-		/usr/include/qt5/QtCore/qmargins.h \
-		/usr/include/qt5/QtCore/qrect.h \
-		/usr/include/qt5/QtCore/qsize.h \
-		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
-		/usr/include/qt5/QtCore/qqueue.h \
-		/usr/include/qt5/QtCore/qregularexpression.h \
-		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
-		/usr/include/qt5/QtCore/qstack.h \
-		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
-		/usr/include/qt5/QtCore/qtimeline.h \
-		/usr/include/qt5/QtCore/qtimezone.h \
-		/usr/include/qt5/QtCore/qxmlstream.h \
-		/usr/include/qt5/QtCore/qtcoreversion.h \
-		/usr/include/qt5/QtGui/QFont \
-		/usr/include/qt5/QtGui/qfont.h \
-		/usr/include/qt5/QtGui/qwindowdefs.h \
-		/usr/include/qt5/QtGui/qwindowdefs_win.h \
-		/usr/include/qt5/QtGui/QPainter \
-		/usr/include/qt5/QtGui/qpainter.h \
-		/usr/include/qt5/QtGui/qpixmap.h \
-		/usr/include/qt5/QtGui/qpaintdevice.h \
-		/usr/include/qt5/QtGui/qcolor.h \
-		/usr/include/qt5/QtGui/qrgb.h \
-		/usr/include/qt5/QtGui/qimage.h \
-		/usr/include/qt5/QtGui/qtransform.h \
-		/usr/include/qt5/QtGui/qmatrix.h \
-		/usr/include/qt5/QtGui/qpolygon.h \
-		/usr/include/qt5/QtGui/qregion.h \
-		/usr/include/qt5/QtGui/qpainterpath.h \
-		/usr/include/qt5/QtGui/qtextoption.h \
-		/usr/include/qt5/QtGui/qpen.h \
-		/usr/include/qt5/QtGui/qbrush.h \
-		/usr/include/qt5/QtGui/qfontinfo.h \
-		/usr/include/qt5/QtGui/qfontmetrics.h \
-		/usr/include/qt5/QtGui/QDesktopServices \
-		/usr/include/qt5/QtGui/qdesktopservices.h \
-		/usr/include/qt5/QtWidgets/QApplication \
-		/usr/include/qt5/QtWidgets/qapplication.h \
-		/usr/include/qt5/QtGui/qcursor.h \
-		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
-		/usr/include/qt5/QtWidgets/qwidget.h \
-		/usr/include/qt5/QtGui/qpalette.h \
-		/usr/include/qt5/QtWidgets/qsizepolicy.h \
-		/usr/include/qt5/QtGui/qkeysequence.h \
-		/usr/include/qt5/QtGui/qevent.h \
-		/usr/include/qt5/QtGui/qvector2d.h \
-		/usr/include/qt5/QtGui/qtouchdevice.h \
-		/usr/include/qt5/QtGui/qguiapplication.h \
-		/usr/include/qt5/QtGui/qinputmethod.h \
-		/usr/include/qt5/QtWidgets/QPushButton \
-		/usr/include/qt5/QtWidgets/qpushbutton.h \
-		/usr/include/qt5/QtWidgets/qabstractbutton.h \
-		/usr/include/qt5/QtGui/qicon.h \
-		/usr/include/qt5/QtWidgets/QLCDNumber \
-		/usr/include/qt5/QtWidgets/qlcdnumber.h \
-		/usr/include/qt5/QtWidgets/qframe.h \
-		/usr/include/qt5/QtWidgets/QColorDialog \
-		/usr/include/qt5/QtWidgets/qcolordialog.h \
-		/usr/include/qt5/QtWidgets/qdialog.h \
-		/usr/include/qt5/QtWidgets/QGridLayout \
-		/usr/include/qt5/QtWidgets/qgridlayout.h \
-		/usr/include/qt5/QtWidgets/qlayout.h \
-		/usr/include/qt5/QtWidgets/qlayoutitem.h \
-		/usr/include/qt5/QtWidgets/qboxlayout.h \
-		/usr/include/qt5/QtWidgets/QHBoxLayout \
-		/usr/include/qt5/QtWidgets/QGroupBox \
-		/usr/include/qt5/QtWidgets/qgroupbox.h \
-		/usr/include/qt5/QtWidgets/QDialog \
-		/usr/include/qt5/QtWidgets/QMenuBar \
-		/usr/include/qt5/QtWidgets/qmenubar.h \
-		/usr/include/qt5/QtWidgets/qmenu.h \
-		/usr/include/qt5/QtWidgets/qaction.h \
-		/usr/include/qt5/QtWidgets/qactiongroup.h \
-		/usr/include/qt5/QtWidgets/QMenu \
-		/usr/include/qt5/QtWidgets/QAction \
-		/usr/include/qt5/QtWidgets/QLabel \
-		/usr/include/qt5/QtWidgets/qlabel.h \
-		/usr/include/qt5/QtWidgets/QMessageBox \
-		/usr/include/qt5/QtWidgets/qmessagebox.h \
-		/usr/include/qt5/QtWidgets/QLineEdit \
-		/usr/include/qt5/QtWidgets/qlineedit.h \
-		/usr/include/qt5/QtGui/qtextcursor.h \
-		/usr/include/qt5/QtGui/qtextformat.h \
-		/usr/include/qt5/QtWidgets/QTextEdit \
-		/usr/include/qt5/QtWidgets/qtextedit.h \
-		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
-		/usr/include/qt5/QtGui/qtextdocument.h \
-		/usr/include/qt5/QtCore/QString \
-		/usr/include/qt5/QtCore/QTime \
-		/usr/include/qt5/QtCore/QTimer \
-		header/Smtp.hpp \
-		/usr/include/qt5/QtWidgets/QWidget \
-		/usr/include/qt5/QtNetwork/QtNetwork \
-		/usr/include/qt5/QtNetwork/QtNetworkDepends \
-		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
-		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
-		/usr/include/qt5/QtCore/QSharedDataPointer \
-		/usr/include/qt5/QtCore/QUrl \
-		/usr/include/qt5/QtCore/QVariant \
-		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
-		/usr/include/qt5/QtCore/QByteArray \
-		/usr/include/qt5/QtCore/QIODevice \
-		/usr/include/qt5/QtNetwork/QNetworkRequest \
-		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
-		/usr/include/qt5/QtNetwork/QSslConfiguration \
-		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
-		/usr/include/qt5/QtNetwork/qsslsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtNetwork/qsslerror.h \
-		/usr/include/qt5/QtNetwork/qsslcertificate.h \
-		/usr/include/qt5/QtNetwork/qssl.h \
-		/usr/include/qt5/QtCore/QFlags \
-		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
-		/usr/include/qt5/QtCore/QList \
-		/usr/include/qt5/QtCore/QMetaType \
-		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
-		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
-		/usr/include/qt5/QtNetwork/qnetworkreply.h \
-		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
-		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
-		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
-		/usr/include/qt5/QtNetwork/qnetworksession.h \
-		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
-		/usr/include/qt5/QtNetwork/qhostaddress.h \
-		/usr/include/qt5/QtNetwork/qauthenticator.h \
-		/usr/include/qt5/QtNetwork/qdnslookup.h \
-		/usr/include/qt5/QtNetwork/qhostinfo.h \
-		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
-		/usr/include/qt5/QtNetwork/qlocalserver.h \
-		/usr/include/qt5/QtNetwork/qlocalsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpserver.h \
-		/usr/include/qt5/QtNetwork/qudpsocket.h \
-		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
-		/usr/include/qt5/QtNetwork/qsslcipher.h \
-		/usr/include/qt5/QtNetwork/qsslkey.h \
-		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
-		/usr/include/qt5/QtNetwork/QSslSocket \
-		header/GetCredentials.hpp \
-		header/Connexion.hpp
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Connexion.hpp -o moc_Connexion.cpp
-
-moc_Imap.cpp: /usr/include/qt5/QtWidgets/QWidget \
+	-$(DEL_FILE) moc_Smtp.cpp moc_MainUI.cpp moc_SendMail.cpp moc_Connexion.cpp moc_AMailRetrieve.cpp moc_BestSocketEver.cpp moc_Imap.cpp
+moc_Smtp.cpp: /usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtWidgets/qwidget.h \
 		/usr/include/qt5/QtGui/qwindowdefs.h \
 		/usr/include/qt5/QtCore/qglobal.h \
@@ -921,8 +612,11 @@ moc_Imap.cpp: /usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
-		header/Imap.hpp
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Imap.hpp -o moc_Imap.cpp
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
+		header/Smtp.hpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Smtp.hpp -o moc_Smtp.cpp
 
 moc_MainUI.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtCore/QtCoreDepends \
@@ -1241,10 +935,15 @@ moc_MainUI.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtNetwork/qsslkey.h \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		header/SendMail.hpp \
 		header/Connexion.hpp \
 		header/GetCredentials.hpp \
 		header/Imap.hpp \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp \
 		header/MainUI.hpp
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/MainUI.hpp -o moc_MainUI.cpp
 
@@ -1529,6 +1228,9 @@ moc_SendMail.cpp: header/Smtp.hpp \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		/usr/include/qt5/QtWidgets/QLabel \
 		/usr/include/qt5/QtWidgets/qlabel.h \
 		/usr/include/qt5/QtWidgets/QPushButton \
@@ -1570,305 +1272,7 @@ moc_SendMail.cpp: header/Smtp.hpp \
 		header/SendMail.hpp
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/SendMail.hpp -o moc_SendMail.cpp
 
-moc_Smtp.cpp: /usr/include/qt5/QtWidgets/QWidget \
-		/usr/include/qt5/QtWidgets/qwidget.h \
-		/usr/include/qt5/QtGui/qwindowdefs.h \
-		/usr/include/qt5/QtCore/qglobal.h \
-		/usr/include/qt5/QtCore/qconfig.h \
-		/usr/include/qt5/QtCore/qfeatures.h \
-		/usr/include/qt5/QtCore/qsystemdetection.h \
-		/usr/include/qt5/QtCore/qprocessordetection.h \
-		/usr/include/qt5/QtCore/qcompilerdetection.h \
-		/usr/include/qt5/QtCore/qglobalstatic.h \
-		/usr/include/qt5/QtCore/qatomic.h \
-		/usr/include/qt5/QtCore/qbasicatomic.h \
-		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
-		/usr/include/qt5/QtCore/qgenericatomic.h \
-		/usr/include/qt5/QtCore/qatomic_msvc.h \
-		/usr/include/qt5/QtCore/qatomic_integrity.h \
-		/usr/include/qt5/QtCore/qoldbasicatomic.h \
-		/usr/include/qt5/QtCore/qatomic_vxworks.h \
-		/usr/include/qt5/QtCore/qatomic_power.h \
-		/usr/include/qt5/QtCore/qatomic_alpha.h \
-		/usr/include/qt5/QtCore/qatomic_armv7.h \
-		/usr/include/qt5/QtCore/qatomic_armv6.h \
-		/usr/include/qt5/QtCore/qatomic_armv5.h \
-		/usr/include/qt5/QtCore/qatomic_bfin.h \
-		/usr/include/qt5/QtCore/qatomic_ia64.h \
-		/usr/include/qt5/QtCore/qatomic_mips.h \
-		/usr/include/qt5/QtCore/qatomic_s390.h \
-		/usr/include/qt5/QtCore/qatomic_sh4a.h \
-		/usr/include/qt5/QtCore/qatomic_sparc.h \
-		/usr/include/qt5/QtCore/qatomic_gcc.h \
-		/usr/include/qt5/QtCore/qatomic_x86.h \
-		/usr/include/qt5/QtCore/qatomic_cxx11.h \
-		/usr/include/qt5/QtCore/qatomic_unix.h \
-		/usr/include/qt5/QtCore/qmutex.h \
-		/usr/include/qt5/QtCore/qlogging.h \
-		/usr/include/qt5/QtCore/qflags.h \
-		/usr/include/qt5/QtCore/qtypeinfo.h \
-		/usr/include/qt5/QtCore/qtypetraits.h \
-		/usr/include/qt5/QtCore/qsysinfo.h \
-		/usr/include/qt5/QtCore/qobjectdefs.h \
-		/usr/include/qt5/QtCore/qnamespace.h \
-		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
-		/usr/include/qt5/QtGui/qwindowdefs_win.h \
-		/usr/include/qt5/QtCore/qobject.h \
-		/usr/include/qt5/QtCore/qstring.h \
-		/usr/include/qt5/QtCore/qchar.h \
-		/usr/include/qt5/QtCore/qbytearray.h \
-		/usr/include/qt5/QtCore/qrefcount.h \
-		/usr/include/qt5/QtCore/qarraydata.h \
-		/usr/include/qt5/QtCore/qstringbuilder.h \
-		/usr/include/qt5/QtCore/qlist.h \
-		/usr/include/qt5/QtCore/qalgorithms.h \
-		/usr/include/qt5/QtCore/qiterator.h \
-		/usr/include/qt5/QtCore/qcoreevent.h \
-		/usr/include/qt5/QtCore/qscopedpointer.h \
-		/usr/include/qt5/QtCore/qmetatype.h \
-		/usr/include/qt5/QtCore/qvarlengtharray.h \
-		/usr/include/qt5/QtCore/qcontainerfwd.h \
-		/usr/include/qt5/QtCore/qisenum.h \
-		/usr/include/qt5/QtCore/qobject_impl.h \
-		/usr/include/qt5/QtCore/qmargins.h \
-		/usr/include/qt5/QtCore/qrect.h \
-		/usr/include/qt5/QtCore/qsize.h \
-		/usr/include/qt5/QtCore/qpoint.h \
-		/usr/include/qt5/QtGui/qpaintdevice.h \
-		/usr/include/qt5/QtGui/qpalette.h \
-		/usr/include/qt5/QtGui/qcolor.h \
-		/usr/include/qt5/QtGui/qrgb.h \
-		/usr/include/qt5/QtCore/qstringlist.h \
-		/usr/include/qt5/QtCore/qdatastream.h \
-		/usr/include/qt5/QtCore/qiodevice.h \
-		/usr/include/qt5/QtCore/qpair.h \
-		/usr/include/qt5/QtCore/qregexp.h \
-		/usr/include/qt5/QtCore/qstringmatcher.h \
-		/usr/include/qt5/QtGui/qbrush.h \
-		/usr/include/qt5/QtCore/qvector.h \
-		/usr/include/qt5/QtGui/qmatrix.h \
-		/usr/include/qt5/QtGui/qpolygon.h \
-		/usr/include/qt5/QtGui/qregion.h \
-		/usr/include/qt5/QtCore/qline.h \
-		/usr/include/qt5/QtGui/qtransform.h \
-		/usr/include/qt5/QtGui/qpainterpath.h \
-		/usr/include/qt5/QtGui/qimage.h \
-		/usr/include/qt5/QtGui/qpixmap.h \
-		/usr/include/qt5/QtCore/qsharedpointer.h \
-		/usr/include/qt5/QtCore/qshareddata.h \
-		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
-		/usr/include/qt5/QtCore/qhash.h \
-		/usr/include/qt5/QtGui/qfont.h \
-		/usr/include/qt5/QtGui/qfontmetrics.h \
-		/usr/include/qt5/QtGui/qfontinfo.h \
-		/usr/include/qt5/QtWidgets/qsizepolicy.h \
-		/usr/include/qt5/QtGui/qcursor.h \
-		/usr/include/qt5/QtGui/qkeysequence.h \
-		/usr/include/qt5/QtGui/qevent.h \
-		/usr/include/qt5/QtCore/qvariant.h \
-		/usr/include/qt5/QtCore/qmap.h \
-		/usr/include/qt5/QtCore/qdebug.h \
-		/usr/include/qt5/QtCore/qtextstream.h \
-		/usr/include/qt5/QtCore/qlocale.h \
-		/usr/include/qt5/QtCore/qset.h \
-		/usr/include/qt5/QtCore/qcontiguouscache.h \
-		/usr/include/qt5/QtCore/qurl.h \
-		/usr/include/qt5/QtCore/qurlquery.h \
-		/usr/include/qt5/QtCore/qfile.h \
-		/usr/include/qt5/QtCore/qfiledevice.h \
-		/usr/include/qt5/QtGui/qvector2d.h \
-		/usr/include/qt5/QtGui/qtouchdevice.h \
-		/usr/include/qt5/QtWidgets/QGridLayout \
-		/usr/include/qt5/QtWidgets/qgridlayout.h \
-		/usr/include/qt5/QtWidgets/qlayout.h \
-		/usr/include/qt5/QtWidgets/qlayoutitem.h \
-		/usr/include/qt5/QtWidgets/qboxlayout.h \
-		/usr/include/qt5/QtWidgets/QTextEdit \
-		/usr/include/qt5/QtWidgets/qtextedit.h \
-		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
-		/usr/include/qt5/QtWidgets/qframe.h \
-		/usr/include/qt5/QtGui/qtextdocument.h \
-		/usr/include/qt5/QtGui/qtextoption.h \
-		/usr/include/qt5/QtGui/qtextcursor.h \
-		/usr/include/qt5/QtGui/qtextformat.h \
-		/usr/include/qt5/QtGui/qpen.h \
-		/usr/include/qt5/QtNetwork/QtNetwork \
-		/usr/include/qt5/QtNetwork/QtNetworkDepends \
-		/usr/include/qt5/QtCore/QtCore \
-		/usr/include/qt5/QtCore/QtCoreDepends \
-		/usr/include/qt5/QtCore/qabstractanimation.h \
-		/usr/include/qt5/QtCore/qanimationgroup.h \
-		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
-		/usr/include/qt5/QtCore/qpauseanimation.h \
-		/usr/include/qt5/QtCore/qpropertyanimation.h \
-		/usr/include/qt5/QtCore/qvariantanimation.h \
-		/usr/include/qt5/QtCore/qeasingcurve.h \
-		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
-		/usr/include/qt5/QtCore/qtextcodec.h \
-		/usr/include/qt5/QtCore/qendian.h \
-		/usr/include/qt5/QtCore/qlibraryinfo.h \
-		/usr/include/qt5/QtCore/qdatetime.h \
-		/usr/include/qt5/QtCore/qnumeric.h \
-		/usr/include/qt5/QtCore/qbuffer.h \
-		/usr/include/qt5/QtCore/qdir.h \
-		/usr/include/qt5/QtCore/qfileinfo.h \
-		/usr/include/qt5/QtCore/qdiriterator.h \
-		/usr/include/qt5/QtCore/qfileselector.h \
-		/usr/include/qt5/QtCore/QObject \
-		/usr/include/qt5/QtCore/QStringList \
-		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
-		/usr/include/qt5/QtCore/qlockfile.h \
-		/usr/include/qt5/QtCore/qloggingcategory.h \
-		/usr/include/qt5/QtCore/qprocess.h \
-		/usr/include/qt5/QtCore/qresource.h \
-		/usr/include/qt5/QtCore/qsavefile.h \
-		/usr/include/qt5/QtCore/qsettings.h \
-		/usr/include/qt5/QtCore/qstandardpaths.h \
-		/usr/include/qt5/QtCore/qtemporarydir.h \
-		/usr/include/qt5/QtCore/QScopedPointer \
-		/usr/include/qt5/QtCore/qtemporaryfile.h \
-		/usr/include/qt5/QtCore/qabstractitemmodel.h \
-		/usr/include/qt5/QtCore/qabstractproxymodel.h \
-		/usr/include/qt5/QtCore/qidentityproxymodel.h \
-		/usr/include/qt5/QtCore/qitemselectionmodel.h \
-		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
-		/usr/include/qt5/QtCore/qstringlistmodel.h \
-		/usr/include/qt5/QtCore/qjsonarray.h \
-		/usr/include/qt5/QtCore/qjsonvalue.h \
-		/usr/include/qt5/QtCore/qjsondocument.h \
-		/usr/include/qt5/QtCore/qjsonobject.h \
-		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
-		/usr/include/qt5/QtCore/qeventloop.h \
-		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
-		/usr/include/qt5/QtCore/qbasictimer.h \
-		/usr/include/qt5/QtCore/qcoreapplication.h \
-		/usr/include/qt5/QtCore/qmath.h \
-		/usr/include/qt5/QtCore/qmetaobject.h \
-		/usr/include/qt5/QtCore/qmimedata.h \
-		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
-		/usr/include/qt5/QtCore/qpointer.h \
-		/usr/include/qt5/QtCore/qsharedmemory.h \
-		/usr/include/qt5/QtCore/qsignalmapper.h \
-		/usr/include/qt5/QtCore/qsocketnotifier.h \
-		/usr/include/qt5/QtCore/qsystemsemaphore.h \
-		/usr/include/qt5/QtCore/qtimer.h \
-		/usr/include/qt5/QtCore/qtranslator.h \
-		/usr/include/qt5/QtCore/qwineventnotifier.h \
-		/usr/include/qt5/QtCore/qmimedatabase.h \
-		/usr/include/qt5/QtCore/qmimetype.h \
-		/usr/include/qt5/QtCore/qfactoryinterface.h \
-		/usr/include/qt5/QtCore/qlibrary.h \
-		/usr/include/qt5/QtCore/qplugin.h \
-		/usr/include/qt5/QtCore/qpluginloader.h \
-		/usr/include/qt5/QtCore/quuid.h \
-		/usr/include/qt5/QtCore/qabstractstate.h \
-		/usr/include/qt5/QtCore/qabstracttransition.h \
-		/usr/include/qt5/QtCore/qeventtransition.h \
-		/usr/include/qt5/QtCore/qfinalstate.h \
-		/usr/include/qt5/QtCore/qhistorystate.h \
-		/usr/include/qt5/QtCore/qsignaltransition.h \
-		/usr/include/qt5/QtCore/qstate.h \
-		/usr/include/qt5/QtCore/qstatemachine.h \
-		/usr/include/qt5/QtCore/qexception.h \
-		/usr/include/qt5/QtCore/qfuture.h \
-		/usr/include/qt5/QtCore/qfutureinterface.h \
-		/usr/include/qt5/QtCore/qrunnable.h \
-		/usr/include/qt5/QtCore/qresultstore.h \
-		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
-		/usr/include/qt5/QtCore/qfuturewatcher.h \
-		/usr/include/qt5/QtCore/qreadwritelock.h \
-		/usr/include/qt5/QtCore/qsemaphore.h \
-		/usr/include/qt5/QtCore/qthread.h \
-		/usr/include/qt5/QtCore/qthreadpool.h \
-		/usr/include/qt5/QtCore/qthreadstorage.h \
-		/usr/include/qt5/QtCore/qwaitcondition.h \
-		/usr/include/qt5/QtCore/qarraydataops.h \
-		/usr/include/qt5/QtCore/qarraydatapointer.h \
-		/usr/include/qt5/QtCore/qbitarray.h \
-		/usr/include/qt5/QtCore/qbytearraymatcher.h \
-		/usr/include/qt5/QtCore/qcache.h \
-		/usr/include/qt5/QtCore/qcollator.h \
-		/usr/include/qt5/QtCore/qcommandlineoption.h \
-		/usr/include/qt5/QtCore/qcommandlineparser.h \
-		/usr/include/qt5/QtCore/qcryptographichash.h \
-		/usr/include/qt5/QtCore/qelapsedtimer.h \
-		/usr/include/qt5/QtCore/qlinkedlist.h \
-		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
-		/usr/include/qt5/QtCore/qqueue.h \
-		/usr/include/qt5/QtCore/qregularexpression.h \
-		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
-		/usr/include/qt5/QtCore/qstack.h \
-		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
-		/usr/include/qt5/QtCore/qtimeline.h \
-		/usr/include/qt5/QtCore/qtimezone.h \
-		/usr/include/qt5/QtCore/qxmlstream.h \
-		/usr/include/qt5/QtCore/qtcoreversion.h \
-		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
-		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
-		/usr/include/qt5/QtCore/QSharedDataPointer \
-		/usr/include/qt5/QtCore/QString \
-		/usr/include/qt5/QtCore/QUrl \
-		/usr/include/qt5/QtCore/QVariant \
-		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
-		/usr/include/qt5/QtCore/QByteArray \
-		/usr/include/qt5/QtCore/QIODevice \
-		/usr/include/qt5/QtNetwork/QNetworkRequest \
-		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
-		/usr/include/qt5/QtNetwork/QSslConfiguration \
-		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
-		/usr/include/qt5/QtNetwork/qsslsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtNetwork/qsslerror.h \
-		/usr/include/qt5/QtNetwork/qsslcertificate.h \
-		/usr/include/qt5/QtNetwork/qssl.h \
-		/usr/include/qt5/QtCore/QFlags \
-		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
-		/usr/include/qt5/QtCore/QList \
-		/usr/include/qt5/QtCore/QMetaType \
-		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
-		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
-		/usr/include/qt5/QtNetwork/qnetworkreply.h \
-		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
-		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
-		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
-		/usr/include/qt5/QtNetwork/qnetworksession.h \
-		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
-		/usr/include/qt5/QtNetwork/qhostaddress.h \
-		/usr/include/qt5/QtNetwork/qauthenticator.h \
-		/usr/include/qt5/QtNetwork/qdnslookup.h \
-		/usr/include/qt5/QtNetwork/qhostinfo.h \
-		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
-		/usr/include/qt5/QtNetwork/qlocalserver.h \
-		/usr/include/qt5/QtNetwork/qlocalsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpserver.h \
-		/usr/include/qt5/QtNetwork/qudpsocket.h \
-		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
-		/usr/include/qt5/QtNetwork/qsslcipher.h \
-		/usr/include/qt5/QtNetwork/qsslkey.h \
-		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
-		/usr/include/qt5/QtNetwork/QSslSocket \
-		/usr/include/qt5/QtWidgets/QLineEdit \
-		/usr/include/qt5/QtWidgets/qlineedit.h \
-		header/Smtp.hpp
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Smtp.hpp -o moc_Smtp.cpp
-
-compiler_moc_source_make_all:
-compiler_moc_source_clean:
-compiler_uic_make_all:
-compiler_uic_clean:
-compiler_yacc_decl_make_all:
-compiler_yacc_decl_clean:
-compiler_yacc_impl_make_all:
-compiler_yacc_impl_clean:
-compiler_lex_make_all:
-compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean 
-
-####### Compile
-
-Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
-		/usr/include/qt5/QtCore/QtCore \
+moc_Connexion.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtCore/QtCoreDepends \
 		/usr/include/qt5/QtCore/qabstractanimation.h \
 		/usr/include/qt5/QtCore/qobject.h \
@@ -2185,14 +1589,14 @@ Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
 		/usr/include/qt5/QtNetwork/qsslkey.h \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		header/GetCredentials.hpp \
-		header/MainUI.hpp \
-		header/SendMail.hpp \
-		header/Imap.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Connexion.o srcs/Connexion.cpp
+		header/Connexion.hpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Connexion.hpp -o moc_Connexion.cpp
 
-GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \
-		/usr/include/qt5/QtCore/QtCore \
+moc_AMailRetrieve.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtCore/QtCoreDepends \
 		/usr/include/qt5/QtCore/qabstractanimation.h \
 		/usr/include/qt5/QtCore/qobject.h \
@@ -2383,10 +1787,595 @@ GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \
 		/usr/include/qt5/QtCore/qtimeline.h \
 		/usr/include/qt5/QtCore/qtimezone.h \
 		/usr/include/qt5/QtCore/qxmlstream.h \
-		/usr/include/qt5/QtCore/qtcoreversion.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GetCredentials.o srcs/GetCredentials.cpp
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		header/AMail.hpp \
+		/usr/include/qt5/QtCore/QString \
+		header/AMailRetrieve.hpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/AMailRetrieve.hpp -o moc_AMailRetrieve.cpp
 
-Imap.o: srcs/Imap.cpp header/Imap.hpp \
+moc_BestSocketEver.cpp: /usr/include/qt5/QtWidgets/QWidget \
+		/usr/include/qt5/QtWidgets/qwidget.h \
+		/usr/include/qt5/QtGui/qwindowdefs.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtGui/qwindowdefs_win.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtGui/qpaintdevice.h \
+		/usr/include/qt5/QtGui/qpalette.h \
+		/usr/include/qt5/QtGui/qcolor.h \
+		/usr/include/qt5/QtGui/qrgb.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtGui/qbrush.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtGui/qmatrix.h \
+		/usr/include/qt5/QtGui/qpolygon.h \
+		/usr/include/qt5/QtGui/qregion.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtGui/qtransform.h \
+		/usr/include/qt5/QtGui/qpainterpath.h \
+		/usr/include/qt5/QtGui/qimage.h \
+		/usr/include/qt5/QtGui/qpixmap.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtGui/qfont.h \
+		/usr/include/qt5/QtGui/qfontmetrics.h \
+		/usr/include/qt5/QtGui/qfontinfo.h \
+		/usr/include/qt5/QtWidgets/qsizepolicy.h \
+		/usr/include/qt5/QtGui/qcursor.h \
+		/usr/include/qt5/QtGui/qkeysequence.h \
+		/usr/include/qt5/QtGui/qevent.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtGui/qvector2d.h \
+		/usr/include/qt5/QtGui/qtouchdevice.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QTextEdit \
+		/usr/include/qt5/QtWidgets/qtextedit.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtGui/qtextdocument.h \
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtGui/qtextcursor.h \
+		/usr/include/qt5/QtGui/qtextformat.h \
+		/usr/include/qt5/QtGui/qpen.h \
+		/usr/include/qt5/QtNetwork/QtNetwork \
+		/usr/include/qt5/QtNetwork/QtNetworkDepends \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
+		/usr/include/qt5/QtCore/QSharedDataPointer \
+		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QUrl \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
+		/usr/include/qt5/QtCore/QByteArray \
+		/usr/include/qt5/QtCore/QIODevice \
+		/usr/include/qt5/QtNetwork/QNetworkRequest \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
+		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
+		/usr/include/qt5/QtCore/QList \
+		/usr/include/qt5/QtCore/QMetaType \
+		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
+		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkreply.h \
+		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
+		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
+		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
+		/usr/include/qt5/QtNetwork/qnetworksession.h \
+		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
+		/usr/include/qt5/QtNetwork/qhostaddress.h \
+		/usr/include/qt5/QtNetwork/qauthenticator.h \
+		/usr/include/qt5/QtNetwork/qdnslookup.h \
+		/usr/include/qt5/QtNetwork/qhostinfo.h \
+		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
+		/usr/include/qt5/QtNetwork/qlocalserver.h \
+		/usr/include/qt5/QtNetwork/qlocalsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpserver.h \
+		/usr/include/qt5/QtNetwork/qudpsocket.h \
+		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
+		/usr/include/qt5/QtNetwork/qsslcipher.h \
+		/usr/include/qt5/QtNetwork/qsslkey.h \
+		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
+		/usr/include/qt5/QtNetwork/QSslSocket \
+		/usr/include/qt5/QtWidgets/QLineEdit \
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
+		header/BestSocketEver.hpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/BestSocketEver.hpp -o moc_BestSocketEver.cpp
+
+moc_Imap.cpp: /usr/include/qt5/QtWidgets/QWidget \
+		/usr/include/qt5/QtWidgets/qwidget.h \
+		/usr/include/qt5/QtGui/qwindowdefs.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtGui/qwindowdefs_win.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtGui/qpaintdevice.h \
+		/usr/include/qt5/QtGui/qpalette.h \
+		/usr/include/qt5/QtGui/qcolor.h \
+		/usr/include/qt5/QtGui/qrgb.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtGui/qbrush.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtGui/qmatrix.h \
+		/usr/include/qt5/QtGui/qpolygon.h \
+		/usr/include/qt5/QtGui/qregion.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtGui/qtransform.h \
+		/usr/include/qt5/QtGui/qpainterpath.h \
+		/usr/include/qt5/QtGui/qimage.h \
+		/usr/include/qt5/QtGui/qpixmap.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtGui/qfont.h \
+		/usr/include/qt5/QtGui/qfontmetrics.h \
+		/usr/include/qt5/QtGui/qfontinfo.h \
+		/usr/include/qt5/QtWidgets/qsizepolicy.h \
+		/usr/include/qt5/QtGui/qcursor.h \
+		/usr/include/qt5/QtGui/qkeysequence.h \
+		/usr/include/qt5/QtGui/qevent.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtGui/qvector2d.h \
+		/usr/include/qt5/QtGui/qtouchdevice.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QTextEdit \
+		/usr/include/qt5/QtWidgets/qtextedit.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtGui/qtextdocument.h \
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtGui/qtextcursor.h \
+		/usr/include/qt5/QtGui/qtextformat.h \
+		/usr/include/qt5/QtGui/qpen.h \
+		/usr/include/qt5/QtNetwork/QtNetwork \
+		/usr/include/qt5/QtNetwork/QtNetworkDepends \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
+		/usr/include/qt5/QtCore/QSharedDataPointer \
+		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QUrl \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
+		/usr/include/qt5/QtCore/QByteArray \
+		/usr/include/qt5/QtCore/QIODevice \
+		/usr/include/qt5/QtNetwork/QNetworkRequest \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
+		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
+		/usr/include/qt5/QtCore/QList \
+		/usr/include/qt5/QtCore/QMetaType \
+		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
+		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkreply.h \
+		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
+		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
+		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
+		/usr/include/qt5/QtNetwork/qnetworksession.h \
+		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
+		/usr/include/qt5/QtNetwork/qhostaddress.h \
+		/usr/include/qt5/QtNetwork/qauthenticator.h \
+		/usr/include/qt5/QtNetwork/qdnslookup.h \
+		/usr/include/qt5/QtNetwork/qhostinfo.h \
+		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
+		/usr/include/qt5/QtNetwork/qlocalserver.h \
+		/usr/include/qt5/QtNetwork/qlocalsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpserver.h \
+		/usr/include/qt5/QtNetwork/qudpsocket.h \
+		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
+		/usr/include/qt5/QtNetwork/qsslcipher.h \
+		/usr/include/qt5/QtNetwork/qsslkey.h \
+		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
+		/usr/include/qt5/QtNetwork/QSslSocket \
+		/usr/include/qt5/QtWidgets/QLineEdit \
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		header/Imap.hpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include header/Imap.hpp -o moc_Imap.cpp
+
+compiler_moc_source_make_all:
+compiler_moc_source_clean:
+compiler_uic_make_all:
+compiler_uic_clean:
+compiler_yacc_decl_make_all:
+compiler_yacc_decl_clean:
+compiler_yacc_impl_make_all:
+compiler_yacc_impl_clean:
+compiler_lex_make_all:
+compiler_lex_clean:
+compiler_clean: compiler_moc_header_clean 
+
+####### Compile
+
+Smtp.o: srcs/Smtp.cpp header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtWidgets/qwidget.h \
 		/usr/include/qt5/QtGui/qwindowdefs.h \
@@ -2666,8 +2655,49 @@ Imap.o: srcs/Imap.cpp header/Imap.hpp \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
-		/usr/include/qt5/QtWidgets/qlineedit.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Imap.o srcs/Imap.cpp
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
+		header/Connexion.hpp \
+		/usr/include/qt5/QtGui/QFont \
+		/usr/include/qt5/QtGui/QPainter \
+		/usr/include/qt5/QtGui/qpainter.h \
+		/usr/include/qt5/QtGui/QDesktopServices \
+		/usr/include/qt5/QtGui/qdesktopservices.h \
+		/usr/include/qt5/QtWidgets/QApplication \
+		/usr/include/qt5/QtWidgets/qapplication.h \
+		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
+		/usr/include/qt5/QtGui/qguiapplication.h \
+		/usr/include/qt5/QtGui/qinputmethod.h \
+		/usr/include/qt5/QtWidgets/QPushButton \
+		/usr/include/qt5/QtWidgets/qpushbutton.h \
+		/usr/include/qt5/QtWidgets/qabstractbutton.h \
+		/usr/include/qt5/QtGui/qicon.h \
+		/usr/include/qt5/QtWidgets/QLCDNumber \
+		/usr/include/qt5/QtWidgets/qlcdnumber.h \
+		/usr/include/qt5/QtWidgets/QColorDialog \
+		/usr/include/qt5/QtWidgets/qcolordialog.h \
+		/usr/include/qt5/QtWidgets/qdialog.h \
+		/usr/include/qt5/QtWidgets/QHBoxLayout \
+		/usr/include/qt5/QtWidgets/QGroupBox \
+		/usr/include/qt5/QtWidgets/qgroupbox.h \
+		/usr/include/qt5/QtWidgets/QDialog \
+		/usr/include/qt5/QtWidgets/QMenuBar \
+		/usr/include/qt5/QtWidgets/qmenubar.h \
+		/usr/include/qt5/QtWidgets/qmenu.h \
+		/usr/include/qt5/QtWidgets/qaction.h \
+		/usr/include/qt5/QtWidgets/qactiongroup.h \
+		/usr/include/qt5/QtWidgets/QMenu \
+		/usr/include/qt5/QtWidgets/QAction \
+		/usr/include/qt5/QtWidgets/QLabel \
+		/usr/include/qt5/QtWidgets/qlabel.h \
+		/usr/include/qt5/QtWidgets/QMessageBox \
+		/usr/include/qt5/QtWidgets/qmessagebox.h \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/QTimer \
+		header/GetCredentials.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Smtp.o srcs/Smtp.cpp
 
 main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/QtCore \
@@ -2987,10 +3017,15 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtNetwork/qsslkey.h \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		header/SendMail.hpp \
 		header/Connexion.hpp \
 		header/GetCredentials.hpp \
-		header/Imap.hpp
+		header/Imap.hpp \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o srcs/main.cpp
 
 MainUI.o: srcs/MainUI.cpp header/MainUI.hpp \
@@ -3311,10 +3346,15 @@ MainUI.o: srcs/MainUI.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtNetwork/qsslkey.h \
 		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
 		/usr/include/qt5/QtNetwork/QSslSocket \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		header/SendMail.hpp \
 		header/Connexion.hpp \
 		header/GetCredentials.hpp \
-		header/Imap.hpp
+		header/Imap.hpp \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainUI.o srcs/MainUI.cpp
 
 SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
@@ -3599,6 +3639,9 @@ SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
 		/usr/include/qt5/QtWidgets/QLabel \
 		/usr/include/qt5/QtWidgets/qlabel.h \
 		/usr/include/qt5/QtWidgets/QPushButton \
@@ -3638,10 +3681,538 @@ SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
 		/usr/include/qt5/QtCore/QTimer \
 		header/GetCredentials.hpp \
 		header/MainUI.hpp \
-		header/Imap.hpp
+		header/Imap.hpp \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SendMail.o srcs/SendMail.cpp
 
-Smtp.o: srcs/Smtp.cpp header/Smtp.hpp \
+Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		/usr/include/qt5/QtGui/QFont \
+		/usr/include/qt5/QtGui/qfont.h \
+		/usr/include/qt5/QtGui/qwindowdefs.h \
+		/usr/include/qt5/QtGui/qwindowdefs_win.h \
+		/usr/include/qt5/QtGui/QPainter \
+		/usr/include/qt5/QtGui/qpainter.h \
+		/usr/include/qt5/QtGui/qpixmap.h \
+		/usr/include/qt5/QtGui/qpaintdevice.h \
+		/usr/include/qt5/QtGui/qcolor.h \
+		/usr/include/qt5/QtGui/qrgb.h \
+		/usr/include/qt5/QtGui/qimage.h \
+		/usr/include/qt5/QtGui/qtransform.h \
+		/usr/include/qt5/QtGui/qmatrix.h \
+		/usr/include/qt5/QtGui/qpolygon.h \
+		/usr/include/qt5/QtGui/qregion.h \
+		/usr/include/qt5/QtGui/qpainterpath.h \
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtGui/qpen.h \
+		/usr/include/qt5/QtGui/qbrush.h \
+		/usr/include/qt5/QtGui/qfontinfo.h \
+		/usr/include/qt5/QtGui/qfontmetrics.h \
+		/usr/include/qt5/QtGui/QDesktopServices \
+		/usr/include/qt5/QtGui/qdesktopservices.h \
+		/usr/include/qt5/QtWidgets/QApplication \
+		/usr/include/qt5/QtWidgets/qapplication.h \
+		/usr/include/qt5/QtGui/qcursor.h \
+		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
+		/usr/include/qt5/QtWidgets/qwidget.h \
+		/usr/include/qt5/QtGui/qpalette.h \
+		/usr/include/qt5/QtWidgets/qsizepolicy.h \
+		/usr/include/qt5/QtGui/qkeysequence.h \
+		/usr/include/qt5/QtGui/qevent.h \
+		/usr/include/qt5/QtGui/qvector2d.h \
+		/usr/include/qt5/QtGui/qtouchdevice.h \
+		/usr/include/qt5/QtGui/qguiapplication.h \
+		/usr/include/qt5/QtGui/qinputmethod.h \
+		/usr/include/qt5/QtWidgets/QPushButton \
+		/usr/include/qt5/QtWidgets/qpushbutton.h \
+		/usr/include/qt5/QtWidgets/qabstractbutton.h \
+		/usr/include/qt5/QtGui/qicon.h \
+		/usr/include/qt5/QtWidgets/QLCDNumber \
+		/usr/include/qt5/QtWidgets/qlcdnumber.h \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtWidgets/QColorDialog \
+		/usr/include/qt5/QtWidgets/qcolordialog.h \
+		/usr/include/qt5/QtWidgets/qdialog.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QHBoxLayout \
+		/usr/include/qt5/QtWidgets/QGroupBox \
+		/usr/include/qt5/QtWidgets/qgroupbox.h \
+		/usr/include/qt5/QtWidgets/QDialog \
+		/usr/include/qt5/QtWidgets/QMenuBar \
+		/usr/include/qt5/QtWidgets/qmenubar.h \
+		/usr/include/qt5/QtWidgets/qmenu.h \
+		/usr/include/qt5/QtWidgets/qaction.h \
+		/usr/include/qt5/QtWidgets/qactiongroup.h \
+		/usr/include/qt5/QtWidgets/QMenu \
+		/usr/include/qt5/QtWidgets/QAction \
+		/usr/include/qt5/QtWidgets/QLabel \
+		/usr/include/qt5/QtWidgets/qlabel.h \
+		/usr/include/qt5/QtWidgets/QMessageBox \
+		/usr/include/qt5/QtWidgets/qmessagebox.h \
+		/usr/include/qt5/QtWidgets/QLineEdit \
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		/usr/include/qt5/QtGui/qtextcursor.h \
+		/usr/include/qt5/QtGui/qtextformat.h \
+		/usr/include/qt5/QtWidgets/QTextEdit \
+		/usr/include/qt5/QtWidgets/qtextedit.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtGui/qtextdocument.h \
+		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/QTimer \
+		header/Smtp.hpp \
+		/usr/include/qt5/QtWidgets/QWidget \
+		/usr/include/qt5/QtNetwork/QtNetwork \
+		/usr/include/qt5/QtNetwork/QtNetworkDepends \
+		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
+		/usr/include/qt5/QtCore/QSharedDataPointer \
+		/usr/include/qt5/QtCore/QUrl \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
+		/usr/include/qt5/QtCore/QByteArray \
+		/usr/include/qt5/QtCore/QIODevice \
+		/usr/include/qt5/QtNetwork/QNetworkRequest \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
+		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
+		/usr/include/qt5/QtCore/QList \
+		/usr/include/qt5/QtCore/QMetaType \
+		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
+		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkreply.h \
+		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
+		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
+		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
+		/usr/include/qt5/QtNetwork/qnetworksession.h \
+		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
+		/usr/include/qt5/QtNetwork/qhostaddress.h \
+		/usr/include/qt5/QtNetwork/qauthenticator.h \
+		/usr/include/qt5/QtNetwork/qdnslookup.h \
+		/usr/include/qt5/QtNetwork/qhostinfo.h \
+		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
+		/usr/include/qt5/QtNetwork/qlocalserver.h \
+		/usr/include/qt5/QtNetwork/qlocalsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpserver.h \
+		/usr/include/qt5/QtNetwork/qudpsocket.h \
+		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
+		/usr/include/qt5/QtNetwork/qsslcipher.h \
+		/usr/include/qt5/QtNetwork/qsslkey.h \
+		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
+		/usr/include/qt5/QtNetwork/QSslSocket \
+		header/BestSocketEver.hpp \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
+		header/GetCredentials.hpp \
+		header/MainUI.hpp \
+		header/SendMail.hpp \
+		header/Imap.hpp \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp \
+		header/pop3.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Connexion.o srcs/Connexion.cpp
+
+GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GetCredentials.o srcs/GetCredentials.cpp
+
+pop3.o: srcs/pop3.cpp header/pop3.hpp \
+		header/BestSocketEver.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtWidgets/qwidget.h \
 		/usr/include/qt5/QtGui/qwindowdefs.h \
@@ -3922,51 +4493,582 @@ Smtp.o: srcs/Smtp.cpp header/Smtp.hpp \
 		/usr/include/qt5/QtNetwork/QSslSocket \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
-		header/Connexion.hpp \
-		/usr/include/qt5/QtGui/QFont \
-		/usr/include/qt5/QtGui/QPainter \
-		/usr/include/qt5/QtGui/qpainter.h \
-		/usr/include/qt5/QtGui/QDesktopServices \
-		/usr/include/qt5/QtGui/qdesktopservices.h \
-		/usr/include/qt5/QtWidgets/QApplication \
-		/usr/include/qt5/QtWidgets/qapplication.h \
-		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
-		/usr/include/qt5/QtGui/qguiapplication.h \
-		/usr/include/qt5/QtGui/qinputmethod.h \
-		/usr/include/qt5/QtWidgets/QPushButton \
-		/usr/include/qt5/QtWidgets/qpushbutton.h \
-		/usr/include/qt5/QtWidgets/qabstractbutton.h \
-		/usr/include/qt5/QtGui/qicon.h \
-		/usr/include/qt5/QtWidgets/QLCDNumber \
-		/usr/include/qt5/QtWidgets/qlcdnumber.h \
-		/usr/include/qt5/QtWidgets/QColorDialog \
-		/usr/include/qt5/QtWidgets/qcolordialog.h \
-		/usr/include/qt5/QtWidgets/qdialog.h \
-		/usr/include/qt5/QtWidgets/QHBoxLayout \
-		/usr/include/qt5/QtWidgets/QGroupBox \
-		/usr/include/qt5/QtWidgets/qgroupbox.h \
-		/usr/include/qt5/QtWidgets/QDialog \
-		/usr/include/qt5/QtWidgets/QMenuBar \
-		/usr/include/qt5/QtWidgets/qmenubar.h \
-		/usr/include/qt5/QtWidgets/qmenu.h \
-		/usr/include/qt5/QtWidgets/qaction.h \
-		/usr/include/qt5/QtWidgets/qactiongroup.h \
-		/usr/include/qt5/QtWidgets/QMenu \
-		/usr/include/qt5/QtWidgets/QAction \
-		/usr/include/qt5/QtWidgets/QLabel \
-		/usr/include/qt5/QtWidgets/qlabel.h \
-		/usr/include/qt5/QtWidgets/QMessageBox \
-		/usr/include/qt5/QtWidgets/qmessagebox.h \
-		/usr/include/qt5/QtCore/QTime \
-		/usr/include/qt5/QtCore/QTimer \
-		header/GetCredentials.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Smtp.o srcs/Smtp.cpp
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker \
+		header/AMailRetrieve.hpp \
+		header/AMail.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pop3.o srcs/pop3.cpp
 
-moc_Connexion.o: moc_Connexion.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Connexion.o moc_Connexion.cpp
+BestSocketEver.o: srcs/BestSocketEver.cpp header/BestSocketEver.hpp \
+		/usr/include/qt5/QtWidgets/QWidget \
+		/usr/include/qt5/QtWidgets/qwidget.h \
+		/usr/include/qt5/QtGui/qwindowdefs.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtGui/qwindowdefs_win.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtGui/qpaintdevice.h \
+		/usr/include/qt5/QtGui/qpalette.h \
+		/usr/include/qt5/QtGui/qcolor.h \
+		/usr/include/qt5/QtGui/qrgb.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtGui/qbrush.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtGui/qmatrix.h \
+		/usr/include/qt5/QtGui/qpolygon.h \
+		/usr/include/qt5/QtGui/qregion.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtGui/qtransform.h \
+		/usr/include/qt5/QtGui/qpainterpath.h \
+		/usr/include/qt5/QtGui/qimage.h \
+		/usr/include/qt5/QtGui/qpixmap.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtGui/qfont.h \
+		/usr/include/qt5/QtGui/qfontmetrics.h \
+		/usr/include/qt5/QtGui/qfontinfo.h \
+		/usr/include/qt5/QtWidgets/qsizepolicy.h \
+		/usr/include/qt5/QtGui/qcursor.h \
+		/usr/include/qt5/QtGui/qkeysequence.h \
+		/usr/include/qt5/QtGui/qevent.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtGui/qvector2d.h \
+		/usr/include/qt5/QtGui/qtouchdevice.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QTextEdit \
+		/usr/include/qt5/QtWidgets/qtextedit.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtGui/qtextdocument.h \
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtGui/qtextcursor.h \
+		/usr/include/qt5/QtGui/qtextformat.h \
+		/usr/include/qt5/QtGui/qpen.h \
+		/usr/include/qt5/QtNetwork/QtNetwork \
+		/usr/include/qt5/QtNetwork/QtNetworkDepends \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
+		/usr/include/qt5/QtCore/QSharedDataPointer \
+		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QUrl \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
+		/usr/include/qt5/QtCore/QByteArray \
+		/usr/include/qt5/QtCore/QIODevice \
+		/usr/include/qt5/QtNetwork/QNetworkRequest \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
+		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
+		/usr/include/qt5/QtCore/QList \
+		/usr/include/qt5/QtCore/QMetaType \
+		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
+		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkreply.h \
+		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
+		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
+		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
+		/usr/include/qt5/QtNetwork/qnetworksession.h \
+		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
+		/usr/include/qt5/QtNetwork/qhostaddress.h \
+		/usr/include/qt5/QtNetwork/qauthenticator.h \
+		/usr/include/qt5/QtNetwork/qdnslookup.h \
+		/usr/include/qt5/QtNetwork/qhostinfo.h \
+		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
+		/usr/include/qt5/QtNetwork/qlocalserver.h \
+		/usr/include/qt5/QtNetwork/qlocalsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpserver.h \
+		/usr/include/qt5/QtNetwork/qudpsocket.h \
+		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
+		/usr/include/qt5/QtNetwork/qsslcipher.h \
+		/usr/include/qt5/QtNetwork/qsslkey.h \
+		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
+		/usr/include/qt5/QtNetwork/QSslSocket \
+		/usr/include/qt5/QtWidgets/QLineEdit \
+		/usr/include/qt5/QtWidgets/qlineedit.h \
+		/usr/include/qt5/QtCore/QMutex \
+		/usr/include/qt5/QtCore/QMutexLocker
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o BestSocketEver.o srcs/BestSocketEver.cpp
 
-moc_Imap.o: moc_Imap.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Imap.o moc_Imap.cpp
+Imap.o: srcs/Imap.cpp header/Imap.hpp \
+		/usr/include/qt5/QtWidgets/QWidget \
+		/usr/include/qt5/QtWidgets/qwidget.h \
+		/usr/include/qt5/QtGui/qwindowdefs.h \
+		/usr/include/qt5/QtCore/qglobal.h \
+		/usr/include/qt5/QtCore/qconfig.h \
+		/usr/include/qt5/QtCore/qfeatures.h \
+		/usr/include/qt5/QtCore/qsystemdetection.h \
+		/usr/include/qt5/QtCore/qprocessordetection.h \
+		/usr/include/qt5/QtCore/qcompilerdetection.h \
+		/usr/include/qt5/QtCore/qglobalstatic.h \
+		/usr/include/qt5/QtCore/qatomic.h \
+		/usr/include/qt5/QtCore/qbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt5/QtCore/qgenericatomic.h \
+		/usr/include/qt5/QtCore/qatomic_msvc.h \
+		/usr/include/qt5/QtCore/qatomic_integrity.h \
+		/usr/include/qt5/QtCore/qoldbasicatomic.h \
+		/usr/include/qt5/QtCore/qatomic_vxworks.h \
+		/usr/include/qt5/QtCore/qatomic_power.h \
+		/usr/include/qt5/QtCore/qatomic_alpha.h \
+		/usr/include/qt5/QtCore/qatomic_armv7.h \
+		/usr/include/qt5/QtCore/qatomic_armv6.h \
+		/usr/include/qt5/QtCore/qatomic_armv5.h \
+		/usr/include/qt5/QtCore/qatomic_bfin.h \
+		/usr/include/qt5/QtCore/qatomic_ia64.h \
+		/usr/include/qt5/QtCore/qatomic_mips.h \
+		/usr/include/qt5/QtCore/qatomic_s390.h \
+		/usr/include/qt5/QtCore/qatomic_sh4a.h \
+		/usr/include/qt5/QtCore/qatomic_sparc.h \
+		/usr/include/qt5/QtCore/qatomic_gcc.h \
+		/usr/include/qt5/QtCore/qatomic_x86.h \
+		/usr/include/qt5/QtCore/qatomic_cxx11.h \
+		/usr/include/qt5/QtCore/qatomic_unix.h \
+		/usr/include/qt5/QtCore/qmutex.h \
+		/usr/include/qt5/QtCore/qlogging.h \
+		/usr/include/qt5/QtCore/qflags.h \
+		/usr/include/qt5/QtCore/qtypeinfo.h \
+		/usr/include/qt5/QtCore/qtypetraits.h \
+		/usr/include/qt5/QtCore/qsysinfo.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt5/QtGui/qwindowdefs_win.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
+		/usr/include/qt5/QtCore/qbytearray.h \
+		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qarraydata.h \
+		/usr/include/qt5/QtCore/qstringbuilder.h \
+		/usr/include/qt5/QtCore/qlist.h \
+		/usr/include/qt5/QtCore/qalgorithms.h \
+		/usr/include/qt5/QtCore/qiterator.h \
+		/usr/include/qt5/QtCore/qcoreevent.h \
+		/usr/include/qt5/QtCore/qscopedpointer.h \
+		/usr/include/qt5/QtCore/qmetatype.h \
+		/usr/include/qt5/QtCore/qvarlengtharray.h \
+		/usr/include/qt5/QtCore/qcontainerfwd.h \
+		/usr/include/qt5/QtCore/qisenum.h \
+		/usr/include/qt5/QtCore/qobject_impl.h \
+		/usr/include/qt5/QtCore/qmargins.h \
+		/usr/include/qt5/QtCore/qrect.h \
+		/usr/include/qt5/QtCore/qsize.h \
+		/usr/include/qt5/QtCore/qpoint.h \
+		/usr/include/qt5/QtGui/qpaintdevice.h \
+		/usr/include/qt5/QtGui/qpalette.h \
+		/usr/include/qt5/QtGui/qcolor.h \
+		/usr/include/qt5/QtGui/qrgb.h \
+		/usr/include/qt5/QtCore/qstringlist.h \
+		/usr/include/qt5/QtCore/qdatastream.h \
+		/usr/include/qt5/QtCore/qiodevice.h \
+		/usr/include/qt5/QtCore/qpair.h \
+		/usr/include/qt5/QtCore/qregexp.h \
+		/usr/include/qt5/QtCore/qstringmatcher.h \
+		/usr/include/qt5/QtGui/qbrush.h \
+		/usr/include/qt5/QtCore/qvector.h \
+		/usr/include/qt5/QtGui/qmatrix.h \
+		/usr/include/qt5/QtGui/qpolygon.h \
+		/usr/include/qt5/QtGui/qregion.h \
+		/usr/include/qt5/QtCore/qline.h \
+		/usr/include/qt5/QtGui/qtransform.h \
+		/usr/include/qt5/QtGui/qpainterpath.h \
+		/usr/include/qt5/QtGui/qimage.h \
+		/usr/include/qt5/QtGui/qpixmap.h \
+		/usr/include/qt5/QtCore/qsharedpointer.h \
+		/usr/include/qt5/QtCore/qshareddata.h \
+		/usr/include/qt5/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt5/QtCore/qhash.h \
+		/usr/include/qt5/QtGui/qfont.h \
+		/usr/include/qt5/QtGui/qfontmetrics.h \
+		/usr/include/qt5/QtGui/qfontinfo.h \
+		/usr/include/qt5/QtWidgets/qsizepolicy.h \
+		/usr/include/qt5/QtGui/qcursor.h \
+		/usr/include/qt5/QtGui/qkeysequence.h \
+		/usr/include/qt5/QtGui/qevent.h \
+		/usr/include/qt5/QtCore/qvariant.h \
+		/usr/include/qt5/QtCore/qmap.h \
+		/usr/include/qt5/QtCore/qdebug.h \
+		/usr/include/qt5/QtCore/qtextstream.h \
+		/usr/include/qt5/QtCore/qlocale.h \
+		/usr/include/qt5/QtCore/qset.h \
+		/usr/include/qt5/QtCore/qcontiguouscache.h \
+		/usr/include/qt5/QtCore/qurl.h \
+		/usr/include/qt5/QtCore/qurlquery.h \
+		/usr/include/qt5/QtCore/qfile.h \
+		/usr/include/qt5/QtCore/qfiledevice.h \
+		/usr/include/qt5/QtGui/qvector2d.h \
+		/usr/include/qt5/QtGui/qtouchdevice.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QTextEdit \
+		/usr/include/qt5/QtWidgets/qtextedit.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtGui/qtextdocument.h \
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtGui/qtextcursor.h \
+		/usr/include/qt5/QtGui/qtextformat.h \
+		/usr/include/qt5/QtGui/qpen.h \
+		/usr/include/qt5/QtNetwork/QtNetwork \
+		/usr/include/qt5/QtNetwork/QtNetworkDepends \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qanimationgroup.h \
+		/usr/include/qt5/QtCore/qparallelanimationgroup.h \
+		/usr/include/qt5/QtCore/qpauseanimation.h \
+		/usr/include/qt5/QtCore/qpropertyanimation.h \
+		/usr/include/qt5/QtCore/qvariantanimation.h \
+		/usr/include/qt5/QtCore/qeasingcurve.h \
+		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qendian.h \
+		/usr/include/qt5/QtCore/qlibraryinfo.h \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/qnumeric.h \
+		/usr/include/qt5/QtCore/qbuffer.h \
+		/usr/include/qt5/QtCore/qdir.h \
+		/usr/include/qt5/QtCore/qfileinfo.h \
+		/usr/include/qt5/QtCore/qdiriterator.h \
+		/usr/include/qt5/QtCore/qfileselector.h \
+		/usr/include/qt5/QtCore/QObject \
+		/usr/include/qt5/QtCore/QStringList \
+		/usr/include/qt5/QtCore/qfilesystemwatcher.h \
+		/usr/include/qt5/QtCore/qlockfile.h \
+		/usr/include/qt5/QtCore/qloggingcategory.h \
+		/usr/include/qt5/QtCore/qprocess.h \
+		/usr/include/qt5/QtCore/qresource.h \
+		/usr/include/qt5/QtCore/qsavefile.h \
+		/usr/include/qt5/QtCore/qsettings.h \
+		/usr/include/qt5/QtCore/qstandardpaths.h \
+		/usr/include/qt5/QtCore/qtemporarydir.h \
+		/usr/include/qt5/QtCore/QScopedPointer \
+		/usr/include/qt5/QtCore/qtemporaryfile.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qabstractproxymodel.h \
+		/usr/include/qt5/QtCore/qidentityproxymodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtCore/qsortfilterproxymodel.h \
+		/usr/include/qt5/QtCore/qstringlistmodel.h \
+		/usr/include/qt5/QtCore/qjsonarray.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h \
+		/usr/include/qt5/QtCore/qjsondocument.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qabstracteventdispatcher.h \
+		/usr/include/qt5/QtCore/qeventloop.h \
+		/usr/include/qt5/QtCore/qabstractnativeeventfilter.h \
+		/usr/include/qt5/QtCore/qbasictimer.h \
+		/usr/include/qt5/QtCore/qcoreapplication.h \
+		/usr/include/qt5/QtCore/qmath.h \
+		/usr/include/qt5/QtCore/qmetaobject.h \
+		/usr/include/qt5/QtCore/qmimedata.h \
+		/usr/include/qt5/QtCore/qobjectcleanuphandler.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qsharedmemory.h \
+		/usr/include/qt5/QtCore/qsignalmapper.h \
+		/usr/include/qt5/QtCore/qsocketnotifier.h \
+		/usr/include/qt5/QtCore/qsystemsemaphore.h \
+		/usr/include/qt5/QtCore/qtimer.h \
+		/usr/include/qt5/QtCore/qtranslator.h \
+		/usr/include/qt5/QtCore/qwineventnotifier.h \
+		/usr/include/qt5/QtCore/qmimedatabase.h \
+		/usr/include/qt5/QtCore/qmimetype.h \
+		/usr/include/qt5/QtCore/qfactoryinterface.h \
+		/usr/include/qt5/QtCore/qlibrary.h \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpluginloader.h \
+		/usr/include/qt5/QtCore/quuid.h \
+		/usr/include/qt5/QtCore/qabstractstate.h \
+		/usr/include/qt5/QtCore/qabstracttransition.h \
+		/usr/include/qt5/QtCore/qeventtransition.h \
+		/usr/include/qt5/QtCore/qfinalstate.h \
+		/usr/include/qt5/QtCore/qhistorystate.h \
+		/usr/include/qt5/QtCore/qsignaltransition.h \
+		/usr/include/qt5/QtCore/qstate.h \
+		/usr/include/qt5/QtCore/qstatemachine.h \
+		/usr/include/qt5/QtCore/qexception.h \
+		/usr/include/qt5/QtCore/qfuture.h \
+		/usr/include/qt5/QtCore/qfutureinterface.h \
+		/usr/include/qt5/QtCore/qrunnable.h \
+		/usr/include/qt5/QtCore/qresultstore.h \
+		/usr/include/qt5/QtCore/qfuturesynchronizer.h \
+		/usr/include/qt5/QtCore/qfuturewatcher.h \
+		/usr/include/qt5/QtCore/qreadwritelock.h \
+		/usr/include/qt5/QtCore/qsemaphore.h \
+		/usr/include/qt5/QtCore/qthread.h \
+		/usr/include/qt5/QtCore/qthreadpool.h \
+		/usr/include/qt5/QtCore/qthreadstorage.h \
+		/usr/include/qt5/QtCore/qwaitcondition.h \
+		/usr/include/qt5/QtCore/qarraydataops.h \
+		/usr/include/qt5/QtCore/qarraydatapointer.h \
+		/usr/include/qt5/QtCore/qbitarray.h \
+		/usr/include/qt5/QtCore/qbytearraymatcher.h \
+		/usr/include/qt5/QtCore/qcache.h \
+		/usr/include/qt5/QtCore/qcollator.h \
+		/usr/include/qt5/QtCore/qcommandlineoption.h \
+		/usr/include/qt5/QtCore/qcommandlineparser.h \
+		/usr/include/qt5/QtCore/qcryptographichash.h \
+		/usr/include/qt5/QtCore/qelapsedtimer.h \
+		/usr/include/qt5/QtCore/qlinkedlist.h \
+		/usr/include/qt5/QtCore/qmessageauthenticationcode.h \
+		/usr/include/qt5/QtCore/qqueue.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtCore/qscopedvaluerollback.h \
+		/usr/include/qt5/QtCore/qstack.h \
+		/usr/include/qt5/QtCore/qtextboundaryfinder.h \
+		/usr/include/qt5/QtCore/qtimeline.h \
+		/usr/include/qt5/QtCore/qtimezone.h \
+		/usr/include/qt5/QtCore/qxmlstream.h \
+		/usr/include/qt5/QtCore/qtcoreversion.h \
+		/usr/include/qt5/QtNetwork/qabstractnetworkcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkrequest.h \
+		/usr/include/qt5/QtCore/QSharedDataPointer \
+		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QUrl \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtNetwork/qhttpmultipart.h \
+		/usr/include/qt5/QtCore/QByteArray \
+		/usr/include/qt5/QtCore/QIODevice \
+		/usr/include/qt5/QtNetwork/QNetworkRequest \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
+		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
+		/usr/include/qt5/QtCore/QList \
+		/usr/include/qt5/QtCore/QMetaType \
+		/usr/include/qt5/QtNetwork/qnetworkcookiejar.h \
+		/usr/include/qt5/QtNetwork/qnetworkdiskcache.h \
+		/usr/include/qt5/QtNetwork/qnetworkreply.h \
+		/usr/include/qt5/QtNetwork/QNetworkAccessManager \
+		/usr/include/qt5/QtNetwork/qnetworkconfigmanager.h \
+		/usr/include/qt5/QtNetwork/qnetworkconfiguration.h \
+		/usr/include/qt5/QtNetwork/qnetworksession.h \
+		/usr/include/qt5/QtNetwork/qnetworkinterface.h \
+		/usr/include/qt5/QtNetwork/qhostaddress.h \
+		/usr/include/qt5/QtNetwork/qauthenticator.h \
+		/usr/include/qt5/QtNetwork/qdnslookup.h \
+		/usr/include/qt5/QtNetwork/qhostinfo.h \
+		/usr/include/qt5/QtNetwork/qnetworkproxy.h \
+		/usr/include/qt5/QtNetwork/qlocalserver.h \
+		/usr/include/qt5/QtNetwork/qlocalsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpserver.h \
+		/usr/include/qt5/QtNetwork/qudpsocket.h \
+		/usr/include/qt5/QtNetwork/qsslcertificateextension.h \
+		/usr/include/qt5/QtNetwork/qsslcipher.h \
+		/usr/include/qt5/QtNetwork/qsslkey.h \
+		/usr/include/qt5/QtNetwork/qtnetworkversion.h \
+		/usr/include/qt5/QtNetwork/QSslSocket \
+		/usr/include/qt5/QtWidgets/QLineEdit \
+		/usr/include/qt5/QtWidgets/qlineedit.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Imap.o srcs/Imap.cpp
+
+moc_Smtp.o: moc_Smtp.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Smtp.o moc_Smtp.cpp
 
 moc_MainUI.o: moc_MainUI.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MainUI.o moc_MainUI.cpp
@@ -3974,8 +5076,17 @@ moc_MainUI.o: moc_MainUI.cpp
 moc_SendMail.o: moc_SendMail.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_SendMail.o moc_SendMail.cpp
 
-moc_Smtp.o: moc_Smtp.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Smtp.o moc_Smtp.cpp
+moc_Connexion.o: moc_Connexion.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Connexion.o moc_Connexion.cpp
+
+moc_AMailRetrieve.o: moc_AMailRetrieve.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_AMailRetrieve.o moc_AMailRetrieve.cpp
+
+moc_BestSocketEver.o: moc_BestSocketEver.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_BestSocketEver.o moc_BestSocketEver.cpp
+
+moc_Imap.o: moc_Imap.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Imap.o moc_Imap.cpp
 
 ####### Install
 

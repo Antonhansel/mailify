@@ -7,18 +7,8 @@ TARGET = mailify
 INCLUDEPATH += . header
 QT += network
 QT += widgets
+CONFIG += c++11 debug
 
 # Input
-HEADERS += header/Connexion.hpp \
-           header/GetCredentials.hpp \
-           header/Imap.hpp \
-           header/MainUI.hpp \
-           header/SendMail.hpp \
-           header/Smtp.hpp
-SOURCES += srcs/Connexion.cpp \
-           srcs/GetCredentials.cpp \
-           srcs/Imap.cpp \
-           srcs/main.cpp \
-           srcs/MainUI.cpp \
-           srcs/SendMail.cpp \
-           srcs/Smtp.cpp
+HEADERS += header/Smtp.hpp header/MainUI.hpp header/SendMail.hpp header/Connexion.hpp header/GetCredentials.hpp header/AMail.hpp header/AMailRetrieve.hpp header/BestSocketEver.hpp header/Imap.hpp
+SOURCES += srcs/Smtp.cpp srcs/main.cpp srcs/MainUI.cpp srcs/SendMail.cpp srcs/Connexion.cpp srcs/GetCredentials.cpp srcs/pop3.cpp srcs/BestSocketEver.cpp srcs/Imap.cpp
