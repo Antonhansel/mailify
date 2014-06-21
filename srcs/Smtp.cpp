@@ -16,14 +16,67 @@ void Smtp::initConnexion(QString &username, QString &password, QString &server, 
     initSmtp();
 }
 
-void  Smtp::sendData(QString input)
-{
-    _pSocket.sendData(input);
-}
-
 void Smtp::initSmtp()
 {
-    connect(&_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("220"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Server is not a SMTP server");
+      }
+      _pSocket.sendData("HELO localhost");
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("250"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Server is not a SMTP server");
+      }
+      _pSocket.sendData("STARTTLS");
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("220 2.0.0 Ready to start TLS"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Server doesn't support TLS");
+      }
+      _pSocket.startClientEncryption();
+      usleep(300);
+      _pSocket.sendData("HELO google.fr");
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      _pSocket.sendData("AUTH LOGIN");
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("334"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Server doesn't support login");
+      }
+      if (_username.endsWith("@gmail.com"))
+          _pSocket.sendData(_username.toUtf8().toBase64());
+      else
+          _pSocket.sendData(_username);
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("334"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Wrong login");
+      }
+      if (_username.endsWith("@gmail.com"))
+          _pSocket.sendData(_password.toUtf8().toBase64());
+      else
+          _pSocket.sendData(_password);
+    });
+    _pSocket.addNextCallback([this] (QByteArray data) {
+      if (!data.startsWith("235"))
+      {
+        _pSocket.clearCallbacks();
+        return _callback("Wrong login or password");
+      }
+      return _callback("");
+    });
     _pSocket.connectToHost(_server, _port);
     _pSocket.waitForConnected();
 }
@@ -33,115 +86,41 @@ bool Smtp::isConnected() const
   return (_connected);
 }
 
-void  Smtp::setFrom(QString from)
+void Smtp::sendMail(QString from, QString to, QString subject, QString data, std::function<void (std::string)> callback)
 {
-  QString tmp;
-
-  _from = from;
-  tmp = "MAIL FROM: ";
-  tmp += _from;
-  printf("From : %s\n", tmp.toUtf8().data());
-  sendData(tmp);
-}
-
-void Smtp::setTo(QString to)
-{
-  _to = to;
-}
-
-void  Smtp::setData(QString data)
-{
-  _data = data;
-}
-
-void  Smtp::setSubject(QString subject)
-{
-  _subject = subject;
-}
-
-void Smtp::readTcpData()
-{
-  QString input;
-  QByteArray   	data = _pSocket.readAll();
-  if (_connected == true)
-  {
-    if (data.startsWith("250 2.1") || data.startsWith("354"))
-    {
-        if (_step == 6)
-        {
-          input = "RCPT TO: ";
-          input += _to;
-          sendData(input);
-          _step++;
-        }
-        else if (_step == 7)
-        {
-          sendData("DATA");
-          _step++;
-        }
-        else if (_step == 8)
-        {
-          input = "From: ";
-          input += _to;
-          sendData(input);
-          input = "To: ";
-          input += _to;
-          sendData(input);
-          sendData(_subject);
-          sendData(_data);
-          sendData("\r\n.\r");
-          _step = 6;
-        }
-    }
-   }
-  else if (_step == -1 && data.startsWith("220"))
-  {
-    sendData("EHLO localhost");
-    _step++;
-  }
-  else if (_step == 0 && data.startsWith("250"))
-  {
-    sendData("STARTTLS");
-    _step++;
-  }
-  else if (_step == 1 && data.startsWith("220 2.0.0 Ready to start TLS"))
-  {
-    _pSocket.startClientEncryption();
-    usleep(300);
-    sendData("EHLO google.fr");
-    _step++;
-  }
-  else if (_step == 2)
-  {
-    sendData("AUTH LOGIN");
-    _step++;
-  }
-  else if (_step == 3 && data.startsWith("334"))
-  {
-    if (_username.endsWith("@gmail.com"))
-        sendData(_username.toUtf8().toBase64());
-    else
-        sendData(_username);
-   _step++;
-  }
-  else if (_step == 4 && data.startsWith("334"))
-  {
-    if (_username.endsWith("@gmail.com"))
-        sendData(_password.toUtf8().toBase64());
-    else
-        sendData(_password);
-    _step++;
-  }
-  else if (_step == 5 && data.startsWith("235"))
-  {
-    _callback("");
-    _step++;
-    _connected = true;
-  }
-  else if (_step == 5 && data.startsWith("535"))
-  {
-    _callback("Error with login");
-  }
+    _pSocket.addNextCallback([this, to, callback] (QByteArray data) {
+      if (!data.startsWith("250 2.1"))
+      {
+        _pSocket.clearCallbacks();
+        return callback("Error while sending mail at MAIL FROM");
+      }
+      _pSocket.sendData("RCPT TO: <" + to + ">");
+    });
+    _pSocket.addNextCallback([this, callback] (QByteArray data) {
+      if (!data.startsWith("250 2.1"))
+      {
+        _pSocket.clearCallbacks();
+        return callback("Error at RCPT TO");
+      }
+      _pSocket.sendData("DATA");
+    });
+    _pSocket.addNextCallback([this, from, to, subject, data, callback] (QByteArray data) {
+      printf("Received : %s\n", data.data());
+      _pSocket.sendData("From: <" + from + ">");
+      _pSocket.sendData("To: <" + to + ">");
+      _pSocket.sendData("Subject: " + subject);
+      _pSocket.sendData(data);
+      _pSocket.sendData("\r\n.\r");
+    });
+    _pSocket.addNextCallback([callback, this] (QByteArray data) {
+      if (!data.startsWith("250"))
+      {
+        _pSocket.clearCallbacks();
+        return callback("Error at end of DATA");
+      }
+      return callback("");
+    });
+    _pSocket.sendData("MAIL FROM: <" + from + ">");
 }
 
 QString &Smtp::username()

@@ -24,21 +24,11 @@ public:
 	Smtp();
 	void 	initSmtp();
 	void 	inputLayout();
-	void 	sendData(QString input);
 	bool 	isConnected() const;
-	void 	setFrom(QString);
-	void 	setTo(QString);
-	void 	setData(QString);
-	void 	setSubject(QString);
+	void 	sendMail(QString from, QString to, QString subject, QString data, std::function<void (std::string)> callback);
 	void 	initConnexion(QString &, QString &, QString &, int, std::function<void (std::string)>);
 	QString &username();
-public slots:
-	void 	readTcpData();
 private:
-	QString			_subject;
-	QString			_data;
-	QString			_to;
-	QString			_from;
 	int 			_port;
 	bool 			_connected;
 	std::function<void (std::string)> 		_callback;

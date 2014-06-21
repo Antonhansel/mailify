@@ -38,7 +38,7 @@ public:
     void    sendData(QString input);
     qint64  write(const QByteArray &byteArray);
     QByteArray      readAll();
-    void            addNextCallback(std::function<void (QByteArray)>, std::function<bool (QByteArray)> = [] (QByteArray) {return true;});
+    void            addNextCallback(std::function<void (QByteArray)>, std::function<bool (QByteArray)> = [] (QByteArray data) {return data.endsWith("\n");});
     void            clearCallbacks();
     void            connectToHost(const QString &, quint16, QIODevice::OpenMode openMode = ReadWrite);
 private slots:
