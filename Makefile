@@ -3728,7 +3728,8 @@ Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
 		header/Imap.hpp \
 		header/AMailRetrieve.hpp \
 		header/AMail.hpp \
-		header/pop3.hpp
+		header/pop3.hpp \
+		header/imap.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Connexion.o srcs/Connexion.cpp
 
 GetCredentials.o: srcs/GetCredentials.cpp header/GetCredentials.hpp \

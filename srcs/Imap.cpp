@@ -12,30 +12,30 @@ void Imap::initConnexion(QString &user, QString &pass, QString &server, int port
     _port = port;
     _user = user;
     _pass = pass;
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("+OK"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Server is not a Imap server");
-    //     }
-    //     _socket.sendData("USER " + _user);
-    // });
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("+OK"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Wrong Username");
-    //     }
-    //     _socket.sendData("PASS " + _pass);
-    // });
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("+OK"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Wrong Password");
-    //     }
-    //     callback("");
-    // });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.startsWith("* OK Gimap ready for requests"))
+        {
+            _socket.clearCallbacks();
+            return callback("Server is not a Imap server");
+        }
+        _socket.sendData("tag login " + _user + " " +_pass + "\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.startsWith("*"))
+        {
+            _socket.clearCallbacks();
+            return callback("Can't login");
+        }
+        _socket.sendData("tag list \"\" \"*\"\r");
+    });
+    _socket.addNextCallback([this, callback] (QByteArray data) {
+        if (!data.endsWith("tag OK Success"))
+        {
+            _socket.clearCallbacks();
+            return callback("Cant list folders");
+        }
+        callback("");
+    });
     _socket.connectToHost(_server, _port);
     _socket.waitForConnected();
     _socket.startClientEncryption();
