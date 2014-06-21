@@ -1,49 +1,39 @@
-#ifndef _IMAP_HPP_
-# define _IMAP_HPP_
+#ifndef IMAP_HPP
+#define IMAP_HPP
 
-//port 993 google
-#define DEBUG true
+#include "BestSocketEver.hpp"
+#include "AMailRetrieve.hpp"
 
-# include <unistd.h>
-# include <QWidget>
-# include <QtWidgets/QGridLayout>
-# include <QTextEdit>
-# include <QtNetwork>
-# include <QSslSocket>
-# include <QtCore>
-# include <iostream>
-# include <QLineEdit>
-
-class Connexion;
-class MainUI;
-class Imap : public QWidget
-{
-Q_OBJECT
+class Imap : public AMailRetrieve {
 public:
-	Imap(MainUI *);
-	void 	initImap();
-	void 	inputLayout();
-	void 	sendData(QString input);
-	bool 	isConnected() const;
-	void 	initConnexion(QString &, QString &, QString &, int, Connexion *);
-public slots:
-	void 	_ready();
-	void 	getInput();
-	void 	readTcpData();
+    Imap();
+    ~Imap();
+    void initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)>);
+    void getMails(std::function<void (std::vector<AMail *>)>);
+private slots:
+    void _readTcpData();
 private:
-	MainUI 			*_parent;
-	int 			_port;
-	bool 			_connected;
-	Connexion 		*_callback;
-	QString			_username;
-	QString			_password;
-	QString			_server;
-	int 			_step;
-	QSslSocket  	*_pSocket;
-	QTextEdit	    *_consoleText;
-	QWidget 		*_window;
-	QGridLayout	 	*_mainLayout;
-	QLineEdit		*_lineedit;
+    std::function<void (std::string)>   _callback;
+    BestSocketEver                      _socket;
+    QString                             _server;
+    QString                             _user;
+    QString                             _pass;
+    int                                 _port;
+    std::vector<AMail *>                _mails;
 };
 
-#endif /* _IMAP_HPP_ */
+class ImapMail : public AMail {
+public:
+    ~ImapMail() {};
+    QString &subject();
+    QString &sender();
+    QString &content();
+    void remove(std::function<void (std::string)>);
+    void parseFromData(QByteArray &);
+private:
+    QString     _subject;
+    QString     _sender;
+    QString     _content;
+};
+
+#endif // IMAP_HPP

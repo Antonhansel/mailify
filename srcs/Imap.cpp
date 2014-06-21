@@ -1,81 +1,98 @@
 #include "Imap.hpp"
+#include <regex>
 
-Imap::Imap(MainUI *mainui)
-{
-	_connected = false;
-	_parent = mainui;
-    _window = new QWidget;
-    if (DEBUG)
-        _window->show();
-    _window->setFixedSize(500, 500);
-    _window->setWindowTitle(tr("Debug IMAP"));
-    _consoleText = new QTextEdit(this);
-    _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
-    _consoleText->setReadOnly(true);
-    _consoleText->setStyleSheet("color: green ; background-color: black");
-    _lineedit = new QLineEdit(this);
-    _mainLayout = new QGridLayout;
-    _mainLayout->addWidget(_consoleText, 0, 0);
-    _mainLayout->addWidget(_lineedit, 1, 0);
-    _window->setLayout(_mainLayout);
-    QObject::connect(_lineedit, SIGNAL(returnPressed()),
-        this,SLOT(getInput(void)));
-}
+Imap::Imap() {};
+Imap::~Imap() {
+    // Close connection
+};
 
-void Imap::initConnexion(QString &username, QString &password, QString &server, int port, Connexion *callback)
+void Imap::initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)> callback)
 {
-    _username = username;
-    _password = password;
     _server = server;
     _port = port;
-    _callback = callback;
-    _step = -1;
-    initImap();
+    _user = user;
+    _pass = pass;
+    // _socket.addNextCallback([this, callback] (QByteArray data) {
+    //     if (!data.startsWith("+OK"))
+    //     {
+    //         _socket.clearCallbacks();
+    //         return callback("Server is not a Imap server");
+    //     }
+    //     _socket.sendData("USER " + _user);
+    // });
+    // _socket.addNextCallback([this, callback] (QByteArray data) {
+    //     if (!data.startsWith("+OK"))
+    //     {
+    //         _socket.clearCallbacks();
+    //         return callback("Wrong Username");
+    //     }
+    //     _socket.sendData("PASS " + _pass);
+    // });
+    // _socket.addNextCallback([this, callback] (QByteArray data) {
+    //     if (!data.startsWith("+OK"))
+    //     {
+    //         _socket.clearCallbacks();
+    //         return callback("Wrong Password");
+    //     }
+    //     callback("");
+    // });
+    _socket.connectToHost(_server, _port);
+    _socket.waitForConnected();
+    _socket.startClientEncryption();
 }
 
-void  Imap::getInput()
+void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
 {
-    QString      input;
-
-    input = _lineedit->text();
-    _lineedit->setText("");
-    _consoleText->append(input);
-    input += '\n';
-    QByteArray    data = input.toUtf8();
-    _pSocket->write(data);
+    // for(unsigned i = 2; i < 15; ++i) {
+    //     _socket.addNextCallback([this, i, callback] (QByteArray data) {
+    //         ImapMail *mail = new ImapMail();
+    //         mail->parseFromData(data);
+    //         _mails.push_back(mail);
+    //         if (i == 14)
+    //         {
+    //             callback(_mails);
+    //             return;
+    //         }
+    //         char tmp[30];
+    //         QString input;
+    //         snprintf(tmp, 29, "%d", i);
+    //         input = "RETR ";
+    //         input += tmp;
+    //         _socket.sendData(input);
+    //     }, [] (QByteArray data) {return data.endsWith(".\r\n");});
+    // }
+    // _socket.sendData("RETR 1");
 }
 
-void Imap::readTcpData()
+QString &ImapMail::subject()
 {
-  QString input;
-  QByteArray   	data = _pSocket->readAll();
-  _consoleText->append(data);
+    return _subject;
 }
 
-void Imap::_ready()
+QString &ImapMail::sender()
 {
-
+    return _sender;
 }
 
-void  Imap::sendData(QString input)
+QString &ImapMail::content()
 {
-    _consoleText->append(input);
-    input += '\n';
-    QByteArray    data = input.toUtf8();
-    _pSocket->write(data);
+    return _content;
 }
 
-void Imap::initImap()
+void ImapMail::remove(std::function<void (std::string)> callback)
 {
-    _pSocket = new QSslSocket(this);
-    connect(_pSocket, SIGNAL(encrypted()), this, SLOT(_ready()));
-    connect(_pSocket, SIGNAL(readyRead()), SLOT(readTcpData()));
-    _pSocket->connectToHost(_server, _port);
-    if (_pSocket->waitForConnected())
-        _consoleText->append("Connexion established.");
+    callback("");
 }
 
-bool Imap::isConnected() const
+void ImapMail::parseFromData(QByteArray &data)
 {
-  return (_connected);
+    // int tmp;
+
+    // tmp = data.indexOf("Subject: ");
+    // _subject = data.mid(tmp + 9, data.indexOf("\n", tmp) - tmp - 9).data();
+    // tmp = data.indexOf("To: ");
+    // _sender = data.mid(tmp + 4, data.indexOf("\n", tmp) - tmp - 4).data();
+    // tmp = data.indexOf("\r\n\r\n");
+    // _content = data.mid(tmp + 4, data.size() - tmp - 9).data();
 }
+
