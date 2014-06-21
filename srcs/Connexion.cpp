@@ -2,6 +2,7 @@
 #include "MainUI.hpp"
 #include "AMailRetrieve.hpp"
 #include "pop3.hpp"
+#include "imap.hpp"
 
 void	Connexion::applyLayouts()
 {
@@ -79,11 +80,11 @@ void  Connexion::initConnexionStuff()
     _portLabel = new QLabel(this);
     _portLabel->setText("Server Port");
     _receiveServerAddress = new QLineEdit(this);
-    _receiveServerAddress->setText("pop.gmail.com");
+    _receiveServerAddress->setText("imap.gmail.com");
     _receiveServerAddressLabel = new QLabel(this);
     _receiveServerAddressLabel->setText("Receive Server Address");
     _receivePort = new QLineEdit(this);
-    _receivePort->setText("995");
+    _receivePort->setText("993");
     _receivePortLabel = new QLabel(this);
     _receivePortLabel->setText("Server Port");
     _popChoose = new QRadioButton("POP3", this);
