@@ -18,15 +18,23 @@ SendMail::SendMail(MainUI *parent)
   this->_mainLayout->addWidget(_subject, 2, 1);
   this->_mainLayout->addWidget(_text, 3, 1);
   this->_mainLayout->addWidget(_send, 4, 0);
+  this->_mainLayout->addWidget(_errorLabel, 4, 1);
   this->_window->setLayout(this->_mainLayout);
   QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMessage(void)));
 }
 
 void  SendMail::sendMessage()
 {
+  _send->setEnabled(false);
   _smtp = _parent->smtp();
-  _smtp->sendMail(_from->text(), _to->text(), _subject->text(), _text->toPlainText(), [] (std::string str) {
-    printf("Ended with : %s\n", str.c_str());
+  _smtp->sendMail(_from->text(), _to->text(), _subject->text(), _text->toPlainText(), [this] (std::string err) {
+    if (err.size())
+    {
+      _errorLabel->setText(err.c_str());
+      _send->setEnabled(true);
+      return;
+    }
+    _errorLabel->setText("Sended !");
   });
 }
 
@@ -43,6 +51,7 @@ void SendMail::initInputs()
   _toLabel->setText("To:");
   _subjectLabel = new QLabel(this);
   _subjectLabel->setText("Subject: ");
+  _errorLabel = new QLabel(this);
   _to = new QLineEdit(this);
   _subject = new QLineEdit(this);
   _text = new QTextEdit(this);

@@ -44,7 +44,7 @@ void Smtp::initSmtp()
       usleep(300);
       _pSocket.sendData("HELO google.fr");
     });
-    _pSocket.addNextCallback([this] (QByteArray data) {
+    _pSocket.addNextCallback([this] (QByteArray) {
       _pSocket.sendData("AUTH LOGIN");
     });
     _pSocket.addNextCallback([this] (QByteArray data) {
@@ -104,8 +104,7 @@ void Smtp::sendMail(QString from, QString to, QString subject, QString data, std
       }
       _pSocket.sendData("DATA");
     });
-    _pSocket.addNextCallback([this, from, to, subject, data, callback] (QByteArray data) {
-      printf("Received : %s\n", data.data());
+    _pSocket.addNextCallback([this, from, to, subject, data] (QByteArray) {
       _pSocket.sendData("From: <" + from + ">");
       _pSocket.sendData("To: <" + to + ">");
       _pSocket.sendData("Subject: " + subject);

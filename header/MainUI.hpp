@@ -27,6 +27,7 @@
 # include <QString>
 # include <QTime>
 # include <QTimer>
+# include <QListWidget>
 # include "Smtp.hpp"
 # include "SendMail.hpp"
 # include "Connexion.hpp"
@@ -45,6 +46,7 @@ public slots:
   void  showAbout() const;
   void  sendMail();
   void  updateMails();
+  void  changedItem(QListWidgetItem *, QListWidgetItem *);
 private:
   void  connectSlots();
   void  initLayouts();
@@ -66,12 +68,13 @@ protected:
   QMenuBar	   *_menuBar;
   QMenu		     *_fileMenu;
   QGridLayout	 *_mainLayout;
-  QTextEdit	   *_folders;
+  QListWidget	 *_folders;
   QTextEdit	   *_mailPreview;
   QLabel	     *_input;
   QPushButton	 *_send;
   QPushButton  *_update;
   QLineEdit	   *_lineedit;
+  std::map<QListWidgetItem *, AMail *> _emails;
 };
 
 #endif /* MAIN_UI_HPP_ */

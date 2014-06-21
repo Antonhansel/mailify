@@ -2,7 +2,7 @@
 #include "MainUI.hpp"
 #include "AMailRetrieve.hpp"
 #include "pop3.hpp"
-#include "imap.hpp"
+#include "Imap.hpp"
 
 void	Connexion::applyLayouts()
 {
