@@ -17,19 +17,21 @@ void    MainUI::changedItem(QListWidgetItem *current, QListWidgetItem *old)
 
 void    MainUI::updateFolders()
 {
-    // _mailRetrieve->getFolders([this] (std::vector<std::string> folders){
-    // for (std::vector<std::string>::iterator i = folders.begin(); i != folders.end(); ++i)
-    //     {
-    //         QListWidgetItem *folder = new QListWidgetItem(QString((*i).c_str()), _folders);
-    //         _foldersList[folder] = *i;
-    //     }
-    // });
+    _mailRetrieve->getFolders([this] (std::vector<std::string> folders){
+        QString temp;
+    for (std::vector<std::string>::iterator i = folders.begin(); i != folders.end(); ++i)
+        {
+            temp = (*i).c_str();
+            QListWidgetItem *email = new QListWidgetItem(temp, _folders);
+            _foldersList[email] = *i;
+        }
+    });
 }
 
 void MainUI::updateMails()
 {
     _mailRetrieve->getMails([this] (std::vector<AMail *> mails){
-        for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
+    for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
         {
             QListWidgetItem *email = new QListWidgetItem((*i)->subject(), _mailListing);
             _emails[email] = *i;

@@ -56,17 +56,18 @@ void    Imap::parsMailNumber(QByteArray data)
     _number = temp.toInt();
 }
 
-void Imap::getFolders(std::function<void (std::string)> callback)
+void Imap::parsFolders(QByteArray data)
 {
-    _socket.sendData("tag list \"\" \"*\"\r");
+    QString temp = data.data();
+    QStringList list2 = temp.split("\n", QString::SkipEmptyParts);
+}
+
+void Imap::getFolders(std::function<void (std::vector<std::string>)> callback)
+{
     _socket.addNextCallback([this, callback] (QByteArray data) {
-        if (!data.startsWith("* LIST"))
-        {
-            _socket.clearCallbacks();
-            return callback("Cant list folders");
-        }
-    callback("");
-    });
+        parsFolders(data);
+    }, [] (QByteArray data) {return data.endsWith("tag OK Success\r\n");});
+    _socket.sendData("tag list \"\" \"*\"\r");
 }
 
 void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
@@ -85,7 +86,6 @@ void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
         QString input;
         snprintf(tmp, 29, "%d", _number - i);
         _socket.sendData("tag FETCH " + QString(tmp) + " body[]\r");
-        std::cout << data.data() << std::endl;
     }, [] (QByteArray data) {return data.endsWith("tag OK Success\r\n");});
     }
     _socket.sendData("tag FETCH 1 body[]\r");
@@ -124,33 +124,4 @@ QString &ImapMail::content()
 void ImapMail::remove(std::function<void (std::string)> callback)
 {
     callback("");
-}
-
-void Imap::getStatus(std::function<void (std::string)> callback)
-{
-    // _socket.sendData("tag status inbox (messages)\r");
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("* STATUS"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Cant list mails");
-    //     }
-    //     _socket.sendData("tag status inbox (unseen)\r");
-    // });
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("* STATUS"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Cant get unseen mail number");
-    //     }
-    //     _socket.sendData("tag SELECT \"inbox\"\r");
-    // });
-    // _socket.addNextCallback([this, callback] (QByteArray data) {
-    //     if (!data.startsWith("*"))
-    //     {
-    //         _socket.clearCallbacks();
-    //         return callback("Cant get unseen mail number");
-    //     }
-    //     callback("");
-    // });
 }

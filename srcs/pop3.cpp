@@ -6,10 +6,8 @@ pop3::~pop3() {
     // Close connection
 };
 
-void pop3::getFolders(std::function<void (std::string)> callback)
-{
-    return ;
-}
+void pop3::getFolders(std::function<void (std::vector<std::string>)>)
+{}
 
 void pop3::initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)> callback)
 {
