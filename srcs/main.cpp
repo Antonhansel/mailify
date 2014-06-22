@@ -5,6 +5,6 @@ int		main(int argc, char **argv)
   QApplication	app(argc, argv);
   MainUI	Client;
   
-  Client.show();
+  //Client.show();
   return (app.exec());
 }

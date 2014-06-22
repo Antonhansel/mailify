@@ -19,25 +19,14 @@ void	MainUI::applyLayouts()
     _mainLayout->setMenuBar(_menuBar);
     _mainLayout->addWidget(_update, 0, 0);
     _mainLayout->addWidget(_folders, 1, 0);
-    _mainLayout->addWidget(_mailPreview, 1, 1);
+    _mailLayout->addWidget(_mailPreview, 1, 0);
+    _mailLayout->addWidget(_mailListing, 0, 0);
+    _mainLayout->addLayout(_mailLayout, 1, 1);
     _mainLayout->addWidget(_send, 0, 1, Qt::AlignRight);
 }
 
 void MainUI::updateMails()
 {
-<<<<<<< HEAD
-  if (!_connexion->_popChoose->isChecked())
-  {
-  }
-  _mailRetrieve->getMails([] (std::vector<AMail *> mails){
-      for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
-      {
-         printf("New mail : %s\n", (*i)->subject().toUtf8().data());
-          printf("From %s\n", (*i)->sender().toUtf8().data());
-          printf("-> %s\n", (*i)->content().toUtf8().data());
-      }
-  });
-=======
     _mailRetrieve->getMails([this] (std::vector<AMail *> mails){
         for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
         {
@@ -45,7 +34,6 @@ void MainUI::updateMails()
             _emails[email] = *i;
         }
     });
->>>>>>> f52a747f10e7cce621a48d14b1dcb4fd520d8b17
 }
 
 void MainUI::connectSlots()
@@ -57,6 +45,7 @@ void MainUI::connectSlots()
 void  MainUI::mailPreviewLayout()
 {
     _mailPreview = new QTextEdit(this);
+    _mailPreview->setFixedHeight(WIDTH/2);
     _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
     _mailPreview->setReadOnly(true);
     _mailPreview->setStyleSheet("color: black;");
@@ -74,9 +63,18 @@ void  MainUI::menuBar()
     connect(_about, SIGNAL(triggered()), this, SLOT(showAbout()));
 }
 
+void MainUI::mailListingLayout()
+{
+    _mailListing = new QListWidget(this);
+    _mailListing->setFrameStyle(QFrame::Box | QFrame::Sunken);
+    _mailListing->setStyleSheet("color: black;");
+    connect(_mailListing, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changedItem(QListWidgetItem *, QListWidgetItem *)));
+}
+
 void	MainUI::initLayouts()
 {
     foldersLayout();
+    mailListingLayout();
     mailPreviewLayout();
     menuBar();
     initButtons();
@@ -90,8 +88,10 @@ void MainUI::sendMail()
 void	MainUI::initUi()
 {
     _mainLayout = new QGridLayout;
+    _mailLayout = new QGridLayout;
     setFixedSize(HEIGHT, WIDTH);
     setWindowTitle(tr("Mailify"));
+    setVisible(false);
 }
 
 void            MainUI::showAbout() const

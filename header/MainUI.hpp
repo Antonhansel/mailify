@@ -1,8 +1,8 @@
 #ifndef MAIN_UI_HPP_
 # define MAIN_UI_HPP_
 
-#define WIDTH 600
-#define HEIGHT 800
+#define HEIGHT 1440
+#define WIDTH 900
 
 # include <sstream>
 # include <QtCore>
@@ -53,10 +53,12 @@ private:
   void  foldersLayout();
   void  initUi();
   void  applyLayouts();
+  void  mailListingLayout();
   void  mailPreviewLayout();
   void  menuBar();
   void  initButtons();
 protected:
+  QGridLayout   *_mailLayout;
   Connexion   *_connexion;
   Smtp        *_smtp;
   AMailRetrieve *_mailRetrieve;
@@ -69,6 +71,7 @@ protected:
   QMenu		     *_fileMenu;
   QGridLayout	 *_mainLayout;
   QListWidget	 *_folders;
+  QListWidget  *_mailListing;
   QTextEdit	   *_mailPreview;
   QLabel	     *_input;
   QPushButton	 *_send;

@@ -50,6 +50,7 @@ void  Connexion::tryConnect()
             _errorLabel->setText(error.c_str());
             return;
         }
+        _parent->show();
         this->_window->hide();
     });
     AMailRetrieve *provider;
@@ -117,6 +118,7 @@ Connexion::Connexion(MainUI *parent) : QWidget()
     initLayouts();
     applyLayouts();
     connectSlots();
+    parent->hide();
     this->_window->setLayout(this->_mainLayout);
     this->_window->show();
 }
