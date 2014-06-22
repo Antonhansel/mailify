@@ -28,6 +28,7 @@
 # include <QTime>
 # include <QTimer>
 # include <QListWidget>
+# include <QWebView>
 # include "Smtp.hpp"
 # include "SendMail.hpp"
 # include "Connexion.hpp"
@@ -48,6 +49,7 @@ public slots:
   void  updateMails();
   void  changedItem(QListWidgetItem *, QListWidgetItem *);
   void  updateFolders();
+  void changedFolders(QListWidgetItem *current, QListWidgetItem *old);
 private:
   void  connectSlots();
   void  initLayouts();
@@ -74,11 +76,13 @@ protected:
   QGridLayout	 *_mainLayout;
   QListWidget	 *_folders;
   QListWidget  *_mailListing;
-  QTextEdit	   *_mailPreview;
+  QWebView	   *_mailPreview;
   QLabel	     *_input;
+  QPushButton  *_getFolders;
   QPushButton	 *_send;
   QPushButton  *_update;
   QLineEdit	   *_lineedit;
+  QGridLayout   *_buttonLayout;
   std::map<QListWidgetItem *, AMail *> _emails;
   std::map<QListWidgetItem *, std::string> _foldersList;
 };

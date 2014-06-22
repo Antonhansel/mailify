@@ -7,6 +7,7 @@ TARGET = mailify
 INCLUDEPATH += . header
 QT += network
 QT += widgets
+QT += webkit webkitwidgets
 CONFIG += c++11 debug
 
 # Input

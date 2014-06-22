@@ -6,13 +6,16 @@ void		MainUI::foldersLayout()
     _folders->setFixedWidth((WIDTH/5));
     _folders->setFrameStyle(QFrame::Box | QFrame::Sunken);
     _folders->setStyleSheet("color: black;");
-    connect(_folders, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changedItem(QListWidgetItem *, QListWidgetItem *)));
+    connect(_folders, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changedFolders(QListWidgetItem *, QListWidgetItem *)));
 }
+
+void    MainUI::changedFolders(QListWidgetItem *current, QListWidgetItem *old)
+{}
 
 void    MainUI::changedItem(QListWidgetItem *current, QListWidgetItem *old)
 {
     (void)old;
-    _mailPreview->setHtml(_emails[current]->content().toUtf8());
+    _mailPreview->setHtml(_emails[current]->content());
 }
 
 void    MainUI::updateFolders()
@@ -38,32 +41,38 @@ void MainUI::updateMails()
         }
     });
     if (!_connexion->_popChoose->isChecked())
-        updateFolders();
+        _getFolders->setVisible(true);
 }
 
 void	MainUI::applyLayouts()
 {
     _mainLayout->setMenuBar(_menuBar);
-    _mainLayout->addWidget(_update, 0, 0);
     _mainLayout->addWidget(_folders, 1, 0);
+    _mainLayout->addWidget(_getFolders, 0, 0);
+
+    _buttonLayout->addWidget(_send, 0, 0);
+    _buttonLayout->addWidget(_update, 0, 1);
+
     _mailLayout->addWidget(_mailPreview, 1, 0);
     _mailLayout->addWidget(_mailListing, 0, 0);
+    _mainLayout->addLayout(_buttonLayout, 0, 1);
     _mainLayout->addLayout(_mailLayout, 1, 1);
-    _mainLayout->addWidget(_send, 0, 1, Qt::AlignRight);
+    _getFolders->setVisible(false);
 }
 
 void MainUI::connectSlots()
 {
     QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMail(void)));
     QObject::connect(_update, SIGNAL(clicked()), this,SLOT(updateMails(void)));
+    QObject::connect(_getFolders, SIGNAL(clicked()), this,SLOT(updateFolders(void)));
 }
 
 void  MainUI::mailPreviewLayout()
 {
-    _mailPreview = new QTextEdit(this);
-    _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
-    _mailPreview->setReadOnly(true);
-    _mailPreview->setStyleSheet("color: black;");
+    _mailPreview = new QWebView(this);
+    // _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
+    // _mailPreview->setReadOnly(true);
+    // _mailPreview->setStyleSheet("color: black;");
 }
 
 void  MainUI::menuBar()
@@ -105,6 +114,7 @@ void	MainUI::initUi()
 {
     _mainLayout = new QGridLayout;
     _mailLayout = new QGridLayout;
+    _buttonLayout = new QGridLayout;
     setFixedSize(HEIGHT, WIDTH);
     setWindowTitle(tr("Mailify"));
     setVisible(false);
@@ -124,6 +134,7 @@ void        MainUI::initButtons()
 {
     _send = new QPushButton("Write a mail");
     _update = new QPushButton("Update mails");
+    _getFolders = new QPushButton("Get Folders");
 }
 
 MainUI::MainUI() : QWidget()
