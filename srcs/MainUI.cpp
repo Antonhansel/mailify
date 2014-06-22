@@ -11,7 +11,32 @@ void		MainUI::foldersLayout()
 
 void    MainUI::changedItem(QListWidgetItem *current, QListWidgetItem *old)
 {
-    _mailPreview->setText(_emails[current]->content());
+    (void)old;
+    _mailPreview->setHtml(_emails[current]->content().toUtf8());
+}
+
+void    MainUI::updateFolders()
+{
+    // _mailRetrieve->getFolders([this] (std::vector<std::string> folders){
+    // for (std::vector<std::string>::iterator i = folders.begin(); i != folders.end(); ++i)
+    //     {
+    //         QListWidgetItem *folder = new QListWidgetItem(QString((*i).c_str()), _folders);
+    //         _foldersList[folder] = *i;
+    //     }
+    // });
+}
+
+void MainUI::updateMails()
+{
+    _mailRetrieve->getMails([this] (std::vector<AMail *> mails){
+        for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
+        {
+            QListWidgetItem *email = new QListWidgetItem((*i)->subject(), _mailListing);
+            _emails[email] = *i;
+        }
+    });
+    if (!_connexion->_popChoose->isChecked())
+        updateFolders();
 }
 
 void	MainUI::applyLayouts()
@@ -25,17 +50,6 @@ void	MainUI::applyLayouts()
     _mainLayout->addWidget(_send, 0, 1, Qt::AlignRight);
 }
 
-void MainUI::updateMails()
-{
-    _mailRetrieve->getMails([this] (std::vector<AMail *> mails){
-        for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
-        {
-            QListWidgetItem *email = new QListWidgetItem((*i)->subject(), _folders);
-            _emails[email] = *i;
-        }
-    });
-}
-
 void MainUI::connectSlots()
 {
     QObject::connect(_send, SIGNAL(clicked()), this,SLOT(sendMail(void)));
@@ -45,7 +59,6 @@ void MainUI::connectSlots()
 void  MainUI::mailPreviewLayout()
 {
     _mailPreview = new QTextEdit(this);
-    _mailPreview->setFixedHeight(WIDTH/2);
     _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
     _mailPreview->setReadOnly(true);
     _mailPreview->setStyleSheet("color: black;");
@@ -66,6 +79,7 @@ void  MainUI::menuBar()
 void MainUI::mailListingLayout()
 {
     _mailListing = new QListWidget(this);
+    _mailListing->setFixedHeight(WIDTH/3);
     _mailListing->setFrameStyle(QFrame::Box | QFrame::Sunken);
     _mailListing->setStyleSheet("color: black;");
     connect(_mailListing, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changedItem(QListWidgetItem *, QListWidgetItem *)));

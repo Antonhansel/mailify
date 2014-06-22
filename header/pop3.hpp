@@ -10,6 +10,7 @@ public:
     ~pop3();
     void initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)>);
     void getMails(std::function<void (std::vector<AMail *>)>);
+    void    getFolders(std::function<void (std::string)> callback);
 private slots:
     void _readTcpData();
 private:

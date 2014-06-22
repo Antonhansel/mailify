@@ -47,6 +47,7 @@ public slots:
   void  sendMail();
   void  updateMails();
   void  changedItem(QListWidgetItem *, QListWidgetItem *);
+  void  updateFolders();
 private:
   void  connectSlots();
   void  initLayouts();
@@ -58,6 +59,7 @@ private:
   void  menuBar();
   void  initButtons();
 protected:
+  QPushButton   *_updateFolders;
   QGridLayout   *_mailLayout;
   Connexion   *_connexion;
   Smtp        *_smtp;
@@ -78,6 +80,7 @@ protected:
   QPushButton  *_update;
   QLineEdit	   *_lineedit;
   std::map<QListWidgetItem *, AMail *> _emails;
+  std::map<QListWidgetItem *, std::string> _foldersList;
 };
 
 #endif /* MAIN_UI_HPP_ */

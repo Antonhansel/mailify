@@ -8,10 +8,13 @@ class Imap : public AMailRetrieve {
 public:
     Imap();
     ~Imap();
+    void parsMailNumber(QByteArray data);
     void initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)>);
     void getMails(std::function<void (std::vector<AMail *>)>);
 private slots:
-    void _readTcpData();
+    void    _readTcpData();
+    void    getFolders(std::function<void (std::string)> callback);
+    void    getStatus(std::function<void (std::string)> callback);
 private:
     std::function<void (std::string)>   _callback;
     BestSocketEver                      _socket;
@@ -20,6 +23,7 @@ private:
     QString                             _pass;
     int                                 _port;
     std::vector<AMail *>                _mails;
+    int                                 _number;
 };
 
 class ImapMail : public AMail {

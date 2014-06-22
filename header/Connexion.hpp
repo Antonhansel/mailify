@@ -51,8 +51,7 @@ private:
   void  applyLayouts();
   void  timeLayout();
   void  initConnexionStuff();
-  void 		getIds();
-  void initConnexion(QString username, QString password, QString server);
+  void  initConnexion(QString username, QString password, QString server);
 protected:
   int       _sendStep;
   bool    _displayAll;

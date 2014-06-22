@@ -68,7 +68,7 @@ BestSocketEverMonitor::BestSocketEverMonitor()
     _window = new QWidget;
     _window->show();
     _window->setFixedSize(1000, 1000);
-    _window->setWindowTitle(tr("Debug Smtp"));
+    _window->setWindowTitle(tr("Console"));
     _consoleText = new QTextEdit(this);
     _consoleText->setFrameStyle(QFrame::Box | QFrame::Sunken);
     _consoleText->setReadOnly(true);
