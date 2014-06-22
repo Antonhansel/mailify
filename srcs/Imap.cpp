@@ -94,16 +94,45 @@ void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
 void ImapMail::parseFromData(QByteArray &data)
 {
     int tmp;
-    QString temp;
+
     tmp = data.indexOf("From: ");
-    _sender = data.mid(tmp + 6, data.indexOf("\n", tmp) - tmp - 6).data();
+    _sender = QString::fromUtf8(data.mid(tmp + 6, data.indexOf("\n", tmp) - tmp - 6).data());
     tmp = data.indexOf("Subject: ");
-    _subject = data.mid(tmp + 9, data.indexOf("\n", tmp) - tmp - 9).data();
-    tmp = data.indexOf("\r\n\r\n");
-    temp = data.mid(tmp + 4, data.size() - tmp - 9).data();
-    data = temp.toUtf8();
-    tmp = data.indexOf("\r\n\r\n");
-    _content = data.mid(tmp, data.lastIndexOf("--", tmp) - tmp).data();
+    _subject = QString::fromUtf8(data.mid(tmp + 9, data.indexOf("\n", tmp) - tmp - 9).data());
+    _parseBoundary(data, true);
+}
+
+void ImapMail::_parseBoundary(QByteArray &data, bool ignoreNoBoundary)
+{
+    int tmp;
+    QString boundary;
+
+    if ((tmp = data.indexOf("boundary=\"")) != -1)
+    {
+        QStringList parts;
+        boundary = "--" + data.mid(tmp + 10, data.indexOf("\"", tmp + 10) - tmp - 10);
+        parts = QString::fromUtf8(data.data()).split(boundary + "\r\n");
+        tmp = data.indexOf(boundary, tmp + boundary.length()) + boundary.length();
+        for (int i = 1; i < parts.size(); ++i)
+        {
+            if (parts.at(i).contains("boundary=\""))
+            {
+                QByteArray tmp = parts.at(i).toUtf8();
+                return _parseBoundary(tmp, false);
+            }
+            else if (parts.at(i).contains("Content-Type: text/html;"))
+            {
+                tmp = parts.at(i).indexOf("\r\n\r\n");
+                _content = parts.at(i).mid(tmp + 2, parts.at(i).length() - tmp - boundary.length() - 10);
+            }
+        }
+    }
+    else if (ignoreNoBoundary)
+    {
+        tmp = data.indexOf("\r\n\r\n");
+        _content = QString::fromUtf8(data.mid(tmp + 4, data.size() - tmp - 24).data());
+        _content.replace("\n", "<br/>");
+    }
 }
 
 QString &ImapMail::subject()

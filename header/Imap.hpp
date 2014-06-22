@@ -35,6 +35,7 @@ public:
     void remove(std::function<void (std::string)>);
     void parseFromData(QByteArray &);
 private:
+    void    _parseBoundary(QByteArray &, bool);
     QString     _subject;
     QString     _sender;
     QString     _content;

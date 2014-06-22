@@ -12,13 +12,13 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_WEBKITWIDGETS_LIB -DQT_QUICK_LIB -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_LOCATION_LIB -DQT_QML_LIB -DQT_WEBKIT_LIB -DQT_WIDGETS_LIB -DQT_POSITIONING_LIB -DQT_SENSORS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -m64 -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -m64 -pipe -g -std=c++0x -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I. -I. -Iheader -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I.
+INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I. -I. -Iheader -I/usr/include/qt5 -I/usr/include/qt5/QtWebKitWidgets -I/usr/include/qt5/QtQuick -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtLocation -I/usr/include/qt5/QtQml -I/usr/include/qt5/QtWebKit -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtPositioning -I/usr/include/qt5/QtSensors -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I.
 LINK          = g++
-LFLAGS        = -m64
-LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Widgets -L/usr/lib/x86_64-linux-gnu -lQt5Network -lQt5Gui -lQt5Core -lGL -lpthread 
+LFLAGS        = -m64 -Wl,-rpath-link,/usr/lib/x86_64-linux-gnu
+LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5WebKitWidgets -L/usr/lib/x86_64-linux-gnu -lQt5Quick -lQt5OpenGL -lQt5PrintSupport -lQt5Location -lQt5Qml -lQt5WebKit -lQt5Widgets -lQt5Positioning -lQt5Sensors -lQt5Network -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
@@ -92,6 +92,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_dbus_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_location.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_opengl.pri \
@@ -99,15 +100,21 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_platformsupport_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_positioning.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qml.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qmltest.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_quick.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sensors.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_xml.pri \
@@ -186,6 +193,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_dbus_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_location.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_opengl.pri \
@@ -193,15 +201,21 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_platformsupport_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_positioning.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qml.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qmltest.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_quick.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sensors.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit_private.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_xml.pri \
@@ -228,10 +242,19 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		mailify.pro \
-		/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl \
-		/usr/lib/x86_64-linux-gnu/libQt5Gui.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5WebKitWidgets.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5WebKit.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Network.prl \
 		/usr/lib/x86_64-linux-gnu/libQt5Core.prl \
-		/usr/lib/x86_64-linux-gnu/libQt5Network.prl
+		/usr/lib/x86_64-linux-gnu/libQt5Gui.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Quick.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Qml.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5OpenGL.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5PrintSupport.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Location.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Positioning.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Sensors.prl
 	$(QMAKE) -o Makefile mailify.pro
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/shell-unix.conf:
@@ -251,6 +274,7 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_dbus_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_gui_private.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_location.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_network_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_opengl.pri:
@@ -258,15 +282,21 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_openglextensions_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_platformsupport_private.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_positioning.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_printsupport_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qml.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_qmltest.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_quick.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sensors.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_sql_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_testlib_private.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit_private.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_xml.pri:
@@ -293,10 +323,19 @@ Makefile: mailify.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.c
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf:
 mailify.pro:
-/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl:
-/usr/lib/x86_64-linux-gnu/libQt5Gui.prl:
-/usr/lib/x86_64-linux-gnu/libQt5Core.prl:
+/usr/lib/x86_64-linux-gnu/libQt5WebKitWidgets.prl:
+/usr/lib/x86_64-linux-gnu/libQt5WebKit.prl:
 /usr/lib/x86_64-linux-gnu/libQt5Network.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Core.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Gui.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Quick.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Qml.prl:
+/usr/lib/x86_64-linux-gnu/libQt5OpenGL.prl:
+/usr/lib/x86_64-linux-gnu/libQt5PrintSupport.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Location.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Positioning.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Sensors.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile mailify.pro
 
@@ -899,6 +938,21 @@ moc_MainUI.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtWidgets/qtabbar.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWebKitWidgets/QWebView \
+		/usr/include/qt5/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt5/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt5/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt5/QtWebKit/qwebsettings.h \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -912,16 +966,6 @@ moc_MainUI.cpp: /usr/include/qt5/QtCore/QtCore \
 		/usr/include/qt5/QtCore/QByteArray \
 		/usr/include/qt5/QtCore/QIODevice \
 		/usr/include/qt5/QtNetwork/QNetworkRequest \
-		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
-		/usr/include/qt5/QtNetwork/QSslConfiguration \
-		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
-		/usr/include/qt5/QtNetwork/qsslsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtNetwork/qsslerror.h \
-		/usr/include/qt5/QtNetwork/qsslcertificate.h \
-		/usr/include/qt5/QtNetwork/qssl.h \
-		/usr/include/qt5/QtCore/QFlags \
 		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
 		/usr/include/qt5/QtCore/QList \
 		/usr/include/qt5/QtCore/QMetaType \
@@ -2436,13 +2480,10 @@ Smtp.o: srcs/Smtp.cpp header/Smtp.hpp \
 		header/GetCredentials.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Smtp.o srcs/Smtp.cpp
 
-main.o: srcs/main.cpp header/MainUI.hpp \
-		/usr/include/qt5/QtCore/QtCore \
-		/usr/include/qt5/QtCore/QtCoreDepends \
-		/usr/include/qt5/QtCore/qabstractanimation.h \
-		/usr/include/qt5/QtCore/qobject.h \
-		/usr/include/qt5/QtCore/qobjectdefs.h \
-		/usr/include/qt5/QtCore/qnamespace.h \
+main.o: srcs/main.cpp /usr/include/qt5/QtCore/QTextCodec \
+		/usr/include/qt5/QtCore/qtextcodec.h \
+		/usr/include/qt5/QtCore/qstring.h \
+		/usr/include/qt5/QtCore/qchar.h \
 		/usr/include/qt5/QtCore/qglobal.h \
 		/usr/include/qt5/QtCore/qconfig.h \
 		/usr/include/qt5/QtCore/qfeatures.h \
@@ -2479,16 +2520,21 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/qtypeinfo.h \
 		/usr/include/qt5/QtCore/qtypetraits.h \
 		/usr/include/qt5/QtCore/qsysinfo.h \
-		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
-		/usr/include/qt5/QtCore/qstring.h \
-		/usr/include/qt5/QtCore/qchar.h \
 		/usr/include/qt5/QtCore/qbytearray.h \
 		/usr/include/qt5/QtCore/qrefcount.h \
+		/usr/include/qt5/QtCore/qnamespace.h \
 		/usr/include/qt5/QtCore/qarraydata.h \
 		/usr/include/qt5/QtCore/qstringbuilder.h \
 		/usr/include/qt5/QtCore/qlist.h \
 		/usr/include/qt5/QtCore/qalgorithms.h \
 		/usr/include/qt5/QtCore/qiterator.h \
+		header/MainUI.hpp \
+		/usr/include/qt5/QtCore/QtCore \
+		/usr/include/qt5/QtCore/QtCoreDepends \
+		/usr/include/qt5/QtCore/qabstractanimation.h \
+		/usr/include/qt5/QtCore/qobject.h \
+		/usr/include/qt5/QtCore/qobjectdefs.h \
+		/usr/include/qt5/QtCore/qobjectdefs_impl.h \
 		/usr/include/qt5/QtCore/qcoreevent.h \
 		/usr/include/qt5/QtCore/qscopedpointer.h \
 		/usr/include/qt5/QtCore/qmetatype.h \
@@ -2520,7 +2566,6 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/qregexp.h \
 		/usr/include/qt5/QtCore/qstringmatcher.h \
 		/usr/include/qt5/QtCore/qsequentialanimationgroup.h \
-		/usr/include/qt5/QtCore/qtextcodec.h \
 		/usr/include/qt5/QtCore/qendian.h \
 		/usr/include/qt5/QtCore/qlibraryinfo.h \
 		/usr/include/qt5/QtCore/qdatetime.h \
@@ -2720,6 +2765,21 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtWidgets/qtabbar.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWebKitWidgets/QWebView \
+		/usr/include/qt5/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt5/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt5/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt5/QtWebKit/qwebsettings.h \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -2733,16 +2793,6 @@ main.o: srcs/main.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/QByteArray \
 		/usr/include/qt5/QtCore/QIODevice \
 		/usr/include/qt5/QtNetwork/QNetworkRequest \
-		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
-		/usr/include/qt5/QtNetwork/QSslConfiguration \
-		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
-		/usr/include/qt5/QtNetwork/qsslsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtNetwork/qsslerror.h \
-		/usr/include/qt5/QtNetwork/qsslcertificate.h \
-		/usr/include/qt5/QtNetwork/qssl.h \
-		/usr/include/qt5/QtCore/QFlags \
 		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
 		/usr/include/qt5/QtCore/QList \
 		/usr/include/qt5/QtCore/QMetaType \
@@ -3065,6 +3115,21 @@ MainUI.o: srcs/MainUI.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtWidgets/qtabbar.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWebKitWidgets/QWebView \
+		/usr/include/qt5/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt5/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt5/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt5/QtWebKit/qwebsettings.h \
+		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt5/QtNetwork/QSslConfiguration \
+		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt5/QtNetwork/qsslsocket.h \
+		/usr/include/qt5/QtNetwork/qtcpsocket.h \
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtNetwork/qsslerror.h \
+		/usr/include/qt5/QtNetwork/qsslcertificate.h \
+		/usr/include/qt5/QtNetwork/qssl.h \
+		/usr/include/qt5/QtCore/QFlags \
 		header/Smtp.hpp \
 		/usr/include/qt5/QtWidgets/QWidget \
 		/usr/include/qt5/QtNetwork/QtNetwork \
@@ -3078,16 +3143,6 @@ MainUI.o: srcs/MainUI.cpp header/MainUI.hpp \
 		/usr/include/qt5/QtCore/QByteArray \
 		/usr/include/qt5/QtCore/QIODevice \
 		/usr/include/qt5/QtNetwork/QNetworkRequest \
-		/usr/include/qt5/QtNetwork/qnetworkaccessmanager.h \
-		/usr/include/qt5/QtNetwork/QSslConfiguration \
-		/usr/include/qt5/QtNetwork/qsslconfiguration.h \
-		/usr/include/qt5/QtNetwork/qsslsocket.h \
-		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtNetwork/qsslerror.h \
-		/usr/include/qt5/QtNetwork/qsslcertificate.h \
-		/usr/include/qt5/QtNetwork/qssl.h \
-		/usr/include/qt5/QtCore/QFlags \
 		/usr/include/qt5/QtNetwork/qnetworkcookie.h \
 		/usr/include/qt5/QtCore/QList \
 		/usr/include/qt5/QtCore/QMetaType \
@@ -3466,6 +3521,11 @@ SendMail.o: srcs/SendMail.cpp header/SendMail.hpp \
 		/usr/include/qt5/QtWidgets/qtabbar.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWebKitWidgets/QWebView \
+		/usr/include/qt5/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt5/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt5/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt5/QtWebKit/qwebsettings.h \
 		header/Imap.hpp \
 		header/AMailRetrieve.hpp \
 		header/AMail.hpp
@@ -3810,6 +3870,11 @@ Connexion.o: srcs/Connexion.cpp header/Connexion.hpp \
 		/usr/include/qt5/QtWidgets/qtabbar.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWebKitWidgets/QWebView \
+		/usr/include/qt5/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt5/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt5/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt5/QtWebKit/qwebsettings.h \
 		header/SendMail.hpp \
 		header/Imap.hpp \
 		header/AMailRetrieve.hpp \

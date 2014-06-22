@@ -28,6 +28,7 @@
 # include <QTime>
 # include <QTimer>
 # include <QListWidget>
+# include <QWebView>
 # include "Smtp.hpp"
 # include "SendMail.hpp"
 # include "Connexion.hpp"
@@ -74,7 +75,7 @@ protected:
   QGridLayout	 *_mainLayout;
   QListWidget	 *_folders;
   QListWidget  *_mailListing;
-  QTextEdit	   *_mailPreview;
+  QWebView	   *_mailPreview;
   QLabel	     *_input;
   QPushButton	 *_send;
   QPushButton  *_update;

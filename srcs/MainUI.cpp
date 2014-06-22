@@ -12,7 +12,7 @@ void		MainUI::foldersLayout()
 void    MainUI::changedItem(QListWidgetItem *current, QListWidgetItem *old)
 {
     (void)old;
-    _mailPreview->setHtml(_emails[current]->content().toUtf8());
+    _mailPreview->setHtml(_emails[current]->content());
 }
 
 void    MainUI::updateFolders()
@@ -58,10 +58,10 @@ void MainUI::connectSlots()
 
 void  MainUI::mailPreviewLayout()
 {
-    _mailPreview = new QTextEdit(this);
-    _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
-    _mailPreview->setReadOnly(true);
-    _mailPreview->setStyleSheet("color: black;");
+    _mailPreview = new QWebView(this);
+    // _mailPreview->setFrameStyle(QFrame::Box | QFrame::Sunken);
+    // _mailPreview->setReadOnly(true);
+    // _mailPreview->setStyleSheet("color: black;");
 }
 
 void  MainUI::menuBar()

@@ -15,21 +15,21 @@ void  BestSocketEver::sendData(QString input)
 
 void BestSocketEver::connectToHost(const QString &address, quint16 port, QIODevice::OpenMode mode)
 {
-    _monitor->_consoleText->append("Connecting to : " + address);
+    _monitor->_consoleText->insertPlainText("Connecting to : " + address);
     QSslSocket::connectToHost(address, port, mode);
 }
 
 qint64  BestSocketEver::write(const QByteArray &byteArray)
 {
     QMutexLocker lock(&_sendMutex);
-    _monitor->_consoleText->append(byteArray);
+    _monitor->_consoleText->insertPlainText(byteArray);
     return QSslSocket::write(byteArray);
 }
 
 QByteArray BestSocketEver::readAll()
 {
     QByteArray tmp = QSslSocket::readAll();
-    _monitor->_consoleText->append(tmp.data());
+    _monitor->_consoleText->insertPlainText(tmp.data());
     return (tmp);
 }
 
