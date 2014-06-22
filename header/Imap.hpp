@@ -13,6 +13,7 @@ public:
     void getMails(std::function<void (std::vector<AMail *>)>);
     void getFolders(std::function<void (std::vector<std::string>)>);
     void parsFolders(QByteArray data);
+    void switchFolder(std::string folder);
 private slots:
     void    _readTcpData();
 private:

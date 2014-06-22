@@ -5,12 +5,15 @@ void		MainUI::foldersLayout()
     _folders = new QListWidget(this);
     _folders->setFixedWidth((WIDTH/5));
     _folders->setFrameStyle(QFrame::Box | QFrame::Sunken);
-    _folders->setStyleSheet("color: black;");
+    _folders->setStyleSheet("color: white; background-color: black");
     connect(_folders, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changedFolders(QListWidgetItem *, QListWidgetItem *)));
 }
 
 void    MainUI::changedFolders(QListWidgetItem *current, QListWidgetItem *old)
-{}
+{
+    (void)old;
+    _mailRetrieve->switchFolder(_foldersList[current]);
+}
 
 void    MainUI::changedItem(QListWidgetItem *current, QListWidgetItem *old)
 {
@@ -33,6 +36,8 @@ void    MainUI::updateFolders()
 
 void MainUI::updateMails()
 {
+    if (_emails.size() < 100)
+    {
     _mailRetrieve->getMails([this] (std::vector<AMail *> mails){
     for (std::vector<AMail *>::iterator i = mails.begin(); i != mails.end(); ++i)
         {
@@ -42,6 +47,7 @@ void MainUI::updateMails()
     });
     if (!_connexion->_popChoose->isChecked())
         _getFolders->setVisible(true);
+    }
 }
 
 void	MainUI::applyLayouts()

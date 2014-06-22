@@ -6,6 +6,19 @@ Imap::~Imap() {
     // Close connection
 };
 
+void Imap::switchFolder(std::string folder)
+{
+    _socket.addNextCallback([this] (QByteArray data) {
+        if (!data.startsWith("*"))
+        {
+            _socket.clearCallbacks();
+        return;
+        }
+        parsMailNumber(data);
+    });
+    _socket.sendData("tag SELECT \"" + QString(folder.c_str()) + "\"\r");
+}
+
 void Imap::initConnexion(QString &user, QString &pass, QString &server, int port, std::function<void (std::string)> callback)
 {
     _server = server;
@@ -83,7 +96,8 @@ void Imap::getFolders(std::function<void (std::vector<std::string>)> callback)
 
 void Imap::getMails(std::function<void (std::vector<AMail *>)> callback)
 {
-    for(unsigned i = 2; i < 15; ++i) {
+    _mails.clear();
+    for(unsigned i = 2; i < 15 && _number - i > 0; ++i) {
     _socket.addNextCallback([this, i, callback] (QByteArray data) {
         ImapMail *mail = new ImapMail();
         mail->parseFromData(data);
